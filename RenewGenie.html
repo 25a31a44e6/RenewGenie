@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RenewGenie — AI-Powered Renewable Energy Platform</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7.23.5/babel.min.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+  html,body{overflow-x:hidden;min-height:100%;transition:background-color .3s,color .3s}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input,select{font-family:inherit}
+  a{color:inherit;text-decoration:none}
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:4px}
+
+  :root, [data-theme="dark"]{
+    --bg: #0a0a0b; --bg-alt: #0f0f11; --text: #f5f5f7;
+    --text-muted: rgba(255,255,255,.6); --text-soft: rgba(255,255,255,.5); --text-faint: rgba(255,255,255,.4);
+    --border: rgba(255,255,255,.08); --border-soft: rgba(255,255,255,.05);
+    --glass-bg: rgba(255,255,255,.04); --glass-strong-bg: rgba(255,255,255,.06);
+    --hover-bg: rgba(255,255,255,.05); --hover-bg-strong: rgba(255,255,255,.1);
+    --surface: rgba(255,255,255,.05); --surface-2: rgba(255,255,255,.08);
+    --scroll-thumb: rgba(255,255,255,.1); --shadow-card: 0 20px 60px rgba(0,0,0,.5);
+    --chart-grid: rgba(255,255,255,.05); --chart-axis: rgba(255,255,255,.4); --chart-zero: rgba(255,255,255,.15);
+    --mesh-1: rgba(16,185,129,.15); --mesh-2: rgba(139,92,246,.12); --mesh-3: rgba(6,182,212,.12);
+    --ring: rgba(16,185,129,.15); --nav-scrolled-bg: rgba(255,255,255,.05);
+    --dropdown-bg: #16161a; --dropdown-hover: rgba(255,255,255,.06);
+  }
+  [data-theme="light"]{
+    --bg: #fbfbfd; --bg-alt: #f3f4f6; --text: #0a0a0b;
+    --text-muted: rgba(15,23,42,.75); --text-soft: rgba(15,23,42,.6); --text-faint: rgba(15,23,42,.5);
+    --border: rgba(15,23,42,.1); --border-soft: rgba(15,23,42,.06);
+    --glass-bg: rgba(255,255,255,.7); --glass-strong-bg: rgba(255,255,255,.85);
+    --hover-bg: rgba(15,23,42,.04); --hover-bg-strong: rgba(15,23,42,.07);
+    --surface: rgba(15,23,42,.04); --surface-2: rgba(15,23,42,.06);
+    --scroll-thumb: rgba(15,23,42,.15); --shadow-card: 0 20px 60px rgba(15,23,42,.12);
+    --chart-grid: rgba(15,23,42,.08); --chart-axis: rgba(15,23,42,.5); --chart-zero: rgba(15,23,42,.2);
+    --mesh-1: rgba(16,185,129,.14); --mesh-2: rgba(139,92,246,.1); --mesh-3: rgba(6,182,212,.1);
+    --ring: rgba(16,185,129,.2); --nav-scrolled-bg: rgba(255,255,255,.75);
+    --dropdown-bg: #ffffff; --dropdown-hover: rgba(15,23,42,.05);
+  }
+  body{background:var(--bg);color:var(--text)}
+  .app{min-height:100vh;background:var(--bg);position:relative;transition:background-color .3s,color .3s}
+
+  .nav{position:fixed;top:0;left:0;right:0;z-index:50;transition:all .3s;padding:20px 0}
+  .nav.scrolled{padding:12px 0}
+  .nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;transition:all .3s}
+  .nav.scrolled .nav-inner{background:var(--nav-scrolled-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:16px;margin:0 16px;max-width:1168px}
+  .nav-row{display:flex;align-items:center;justify-content:space-between;height:48px}
+  .brand{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;letter-spacing:-.02em;color:var(--text)}
+  .brand-badge{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#10b981,#06b6d4,#8b5cf6);display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(16,185,129,.3)}
+  .grad-text{background:linear-gradient(135deg,#34d399,#22d3ee,#a78bfa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .nav-links{display:flex;gap:4px}
+  .nav-link{padding:8px 16px;font-size:14px;font-weight:500;border-radius:8px;color:var(--text-soft);transition:all .2s}
+  .nav-link:hover{color:var(--text);background:var(--hover-bg)}
+  .nav-link.active{background:var(--hover-bg-strong);color:var(--text)}
+
+  .btn-primary{background:linear-gradient(135deg,#10b981,#06b6d4);color:#fff;font-weight:600;padding:10px 20px;border-radius:12px;transition:all .3s;font-size:14px}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(16,185,129,.4)}
+  .btn-primary:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none}
+  .btn-ghost{background:var(--glass-bg);backdrop-filter:blur(20px);border:1px solid var(--border);padding:10px 20px;border-radius:12px;font-weight:600;transition:all .3s;font-size:14px;color:var(--text)}
+  .btn-ghost:hover{background:var(--hover-bg-strong)}
+  .glass{background:var(--glass-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:24px}
+  .glass-strong{background:var(--glass-strong-bg);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border:1px solid var(--border);border-radius:24px}
+
+  .theme-toggle{position:relative;width:64px;height:34px;border-radius:999px;background:var(--surface);border:1px solid var(--border);transition:all .3s;display:flex;align-items:center;padding:0 4px;flex-shrink:0}
+  .theme-toggle:hover{border-color:rgba(16,185,129,.5)}
+  .theme-knob{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#10b981,#06b6d4);display:flex;align-items:center;justify-content:center;transition:transform .35s cubic-bezier(.4,0,.2,1);box-shadow:0 2px 8px rgba(0,0,0,.2)}
+  [data-theme="light"] .theme-knob{transform:translateX(30px)}
+  .theme-icons{position:absolute;right:8px;top:50%;transform:translateY(-50%);opacity:.4;pointer-events:none;transition:all .3s}
+  [data-theme="light"] .theme-icons{right:auto;left:8px}
+
+  .hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;background-image:radial-gradient(at 20% 20%,var(--mesh-1) 0,transparent 50%),radial-gradient(at 80% 30%,var(--mesh-2) 0,transparent 50%),radial-gradient(at 50% 80%,var(--mesh-3) 0,transparent 50%)}
+  .hero-content{position:relative;max-width:1200px;margin:0 auto;padding:120px 24px 80px;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+  .hero h1{font-size:clamp(36px,5vw,64px);font-weight:900;line-height:1.05;letter-spacing:-.03em;margin-bottom:24px;color:var(--text)}
+  .hero p.lead{font-size:18px;color:var(--text-muted);line-height:1.6;margin-bottom:32px;max-width:520px}
+  .badge-pill{display:inline-flex;align-items:center;gap:8px;background:var(--glass-bg);border:1px solid var(--border);border-radius:999px;padding:8px 16px;font-size:14px;margin-bottom:24px}
+  .badge-dot{width:8px;height:8px;border-radius:50%;background:#34d399;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .hero-buttons{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:48px}
+  .hero-features{display:flex;flex-wrap:wrap;gap:24px;font-size:14px;color:var(--text-soft)}
+  .hero-feature{display:flex;align-items:center;gap:8px}
+
+  .float-card{background:var(--glass-strong-bg);backdrop-filter:blur(30px);border:1px solid var(--border);border-radius:24px;padding:32px;position:relative;overflow:hidden;animation:float 6s ease-in-out infinite;box-shadow:var(--shadow-card)}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .float-card::before{content:'';position:absolute;top:-80px;right:-80px;width:256px;height:256px;background:rgba(16,185,129,.2);border-radius:50%;filter:blur(60px)}
+
+  .stat-row{display:flex;align-items:center;justify-content:space-between;padding:16px;border-radius:16px;background:var(--surface);border:1px solid var(--border-soft);margin-bottom:12px}
+  .stat-label{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--text-muted)}
+  .stat-value{font-size:14px;font-weight:600;text-align:right;color:var(--text)}
+
+  .section{padding:96px 0;position:relative}
+  .section-inner{max-width:1200px;margin:0 auto;padding:0 24px}
+  .section-header{text-align:center;margin-bottom:64px}
+  .eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.2em;color:#10b981;font-weight:600;margin-bottom:12px}
+  .section-title{font-size:clamp(32px,4vw,48px);font-weight:900;letter-spacing:-.03em;margin-bottom:16px;color:var(--text)}
+  .section-sub{color:var(--text-muted);max-width:640px;margin:0 auto;line-height:1.6}
+
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+
+  .feature-card{background:var(--glass-bg);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:24px;padding:28px;transition:all .3s cubic-bezier(.4,0,.2,1);text-align:left;width:100%;color:var(--text)}
+  .feature-card:hover{transform:translateY(-4px);border-color:var(--hover-bg-strong);box-shadow:var(--shadow-card)}
+  .feature-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+  .feature-card h3{font-size:20px;font-weight:700;margin-bottom:8px;color:var(--text)}
+  .feature-card p{font-size:14px;color:var(--text-soft);line-height:1.5}
+
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:32px}
+  .stat-block{text-align:center}
+  .stat-icon{width:48px;height:48px;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px}
+  .stat-num{font-size:clamp(28px,3vw,40px);font-weight:900;background:linear-gradient(135deg,#34d399,#22d3ee,#a78bfa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+  .stat-lbl{font-size:14px;color:var(--text-soft)}
+
+  .cta-box{background:var(--glass-strong-bg);backdrop-filter:blur(30px);border:1px solid var(--border);border-radius:32px;padding:64px 48px;text-align:center;position:relative;overflow:hidden}
+  .cta-box::before{content:'';position:absolute;top:-128px;left:50%;transform:translateX(-50%);width:384px;height:384px;background:rgba(16,185,129,.2);border-radius:50%;filter:blur(80px)}
+  .cta-box::after{content:'';position:absolute;bottom:-128px;left:25%;width:384px;height:384px;background:rgba(139,92,246,.2);border-radius:50%;filter:blur(80px)}
+  .cta-box > *{position:relative;z-index:1}
+  .cta-box h2{font-size:clamp(28px,4vw,48px);font-weight:900;letter-spacing:-.03em;margin-bottom:16px;color:var(--text)}
+  .cta-box p{color:var(--text-muted);max-width:640px;margin:0 auto 32px;font-size:18px}
+
+  .form-card{padding:40px;border-radius:24px;background:var(--glass-strong-bg);backdrop-filter:blur(30px);border:1px solid var(--border)}
+  .progress-bar{display:flex;gap:8px;margin-bottom:40px}
+  .progress-seg{height:4px;flex:1;border-radius:999px;background:var(--surface-2);transition:all .3s}
+  .progress-seg.active{background:linear-gradient(135deg,#10b981,#06b6d4,#8b5cf6)}
+
+  .option-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+  .option-btn{padding:20px;border-radius:16px;border:1px solid var(--border);background:var(--surface);text-align:left;transition:all .2s;color:var(--text)}
+  .option-btn:hover{background:var(--hover-bg-strong)}
+  .option-btn.selected{border-color:rgba(16,185,129,.5);background:rgba(16,185,129,.1)}
+  .option-btn .opt-title{font-weight:600;margin-bottom:4px}
+  .option-btn .opt-desc{font-size:12px;color:var(--text-soft)}
+
+  .big-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;font-size:24px;font-weight:700;color:var(--text);outline:none;transition:all .2s}
+  .big-input:focus{border-color:#10b981;box-shadow:0 0 0 3px var(--ring)}
+  .big-input::placeholder{color:var(--text-faint)}
+
+  .chip{font-size:12px;padding:6px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--border);transition:all .2s;color:var(--text)}
+  .chip:hover{background:var(--hover-bg-strong)}
+
+  .metric-box{padding:16px;border-radius:16px;background:var(--surface);border:1px solid var(--border)}
+  .metric-lbl{font-size:12px;color:var(--text-soft);margin-bottom:4px}
+  .metric-val{font-size:20px;font-weight:700;color:var(--text)}
+
+  .result-hero{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center}
+  .rec-title{font-size:36px;font-weight:900;display:flex;align-items:center;gap:12px;margin-bottom:12px;color:var(--text)}
+  .rec-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;background:rgba(16,185,129,.2);color:#10b981;font-size:12px;font-weight:600;margin-bottom:16px}
+  [data-theme="light"] .rec-chip{color:#059669}
+  .rec-desc{color:var(--text-muted);margin-bottom:24px;line-height:1.6}
+
+  .step-row{display:flex;gap:12px;padding:16px;border-radius:16px;background:var(--surface);align-items:flex-start}
+  .step-num{width:24px;height:24px;border-radius:50%;background:rgba(16,185,129,.2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#10b981;flex-shrink:0}
+  [data-theme="light"] .step-num{color:#059669}
+  .step-text{font-size:14px;color:var(--text-muted);line-height:1.5}
+
+  .faq-item{background:var(--glass-bg);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:12px;transition:background .2s,border-color .2s}
+  .faq-q{width:100%;display:flex;align-items:center;justify-content:space-between;padding:24px;text-align:left;font-weight:600;transition:background .2s;color:var(--text)}
+  .faq-q:hover{background:var(--hover-bg)}
+  .faq-a{padding:0 24px 24px;color:var(--text-muted);line-height:1.6;animation:fadeUp .3s ease-out}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  .scheme-card{background:var(--glass-bg);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:24px;padding:24px;transition:all .3s;display:flex;flex-direction:column}
+  .scheme-card:hover{transform:translateY(-4px);border-color:var(--hover-bg-strong);box-shadow:var(--shadow-card)}
+  .scheme-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+  .scheme-cat{font-size:12px;font-weight:600;padding:4px 12px;border-radius:999px;background:rgba(251,191,36,.15);color:#d97706;border:1px solid rgba(251,191,36,.3)}
+  [data-theme="dark"] .scheme-cat{color:#fcd34d}
+  .scheme-title{font-size:18px;font-weight:700;line-height:1.3;margin-bottom:8px;color:var(--text)}
+  .scheme-desc{font-size:14px;color:var(--text-soft);line-height:1.5;margin-bottom:16px;flex:1}
+  .scheme-foot{display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:1px solid var(--border-soft)}
+
+  .search-box{position:relative;flex:1;min-width:200px}
+  .search-box input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:12px 16px 12px 44px;font-size:14px;color:var(--text);outline:none}
+  .search-box input::placeholder{color:var(--text-faint)}
+  .search-box svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text-faint)}
+
+  .filter-tab{padding:8px 16px;font-size:14px;font-weight:500;border-radius:12px;color:var(--text-soft);border:1px solid transparent;transition:all .2s}
+  .filter-tab:hover{background:var(--hover-bg)}
+  .filter-tab.active{background:rgba(16,185,129,.2);color:#059669;border-color:rgba(16,185,129,.3)}
+  [data-theme="dark"] .filter-tab.active{color:#6ee7b7}
+
+  .impact-card{position:relative;overflow:hidden;border-radius:24px;padding:28px;background:var(--glass-bg);border:1px solid var(--border);transition:all .3s}
+  .impact-card:hover{transform:translateY(-4px);border-color:var(--hover-bg-strong)}
+  .sdg-num{width:64px;height:64px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;margin-bottom:20px}
+  .prog-bar{height:6px;background:var(--surface-2);border-radius:999px;overflow:hidden;margin-top:8px}
+  .prog-fill{height:100%;border-radius:999px;transition:width 1s ease}
+
+  .footer{border-top:1px solid var(--border-soft);padding:64px 0 32px;margin-top:80px}
+  .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;margin-bottom:48px}
+  .footer h4{font-size:14px;font-weight:600;margin-bottom:16px;color:var(--text)}
+  .footer ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+  .footer ul button,.footer ul a{font-size:14px;color:var(--text-soft);transition:color .2s;text-align:left}
+  .footer ul button:hover,.footer ul a:hover{color:var(--text)}
+
+  .chart-wrap{width:100%;height:280px;position:relative}
+  .chart-svg{width:100%;height:100%;display:block}
+  .slider{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:999px;background:var(--surface-2);outline:none;cursor:pointer}
+  .slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#10b981;cursor:pointer;border:3px solid var(--bg);box-shadow:0 0 0 1px #10b981}
+  .slider::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#10b981;cursor:pointer;border:3px solid var(--bg)}
+
+  .slide-header{display:flex;justify-content:space-between;margin-bottom:8px}
+  .slide-name{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text-muted)}
+  .slide-val{font-size:14px;font-weight:600;color:#10b981}
+  .chart-legend{display:flex;gap:24px;margin-top:12px;font-size:12px;color:var(--text-muted)}
+  .legend-dot{width:12px;height:12px;border-radius:3px;display:inline-block;margin-right:6px}
+
+  /* ===== LOCATION SELECTOR ===== */
+  .loc-selector{display:flex;flex-direction:column;gap:16px}
+  .loc-field{position:relative}
+  .loc-label{font-size:12px;font-weight:600;color:var(--text-soft);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .loc-input-wrap{position:relative;display:flex;align-items:center}
+  .loc-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 44px 14px 46px;font-size:15px;color:var(--text);outline:none;transition:all .2s;font-weight:500;cursor:pointer}
+  .loc-input:hover{border-color:rgba(16,185,129,.3)}
+  .loc-input:focus,.loc-input.open{border-color:#10b981;box-shadow:0 0 0 3px var(--ring)}
+  .loc-input:disabled{opacity:.5;cursor:not-allowed}
+  .loc-input-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:#10b981;pointer-events:none}
+  .loc-chevron{position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--text-faint);pointer-events:none;transition:transform .2s}
+  .loc-chevron.open{transform:translateY(-50%) rotate(180deg)}
+
+  .loc-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--dropdown-bg);border:1px solid var(--border);border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.35);z-index:100;max-height:260px;overflow:hidden;display:flex;flex-direction:column;animation:dropIn .18s ease-out}
+  [data-theme="light"] .loc-dropdown{box-shadow:0 20px 50px rgba(15,23,42,.15)}
+  @keyframes dropIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+  .loc-search{padding:10px;border-bottom:1px solid var(--border)}
+  .loc-search input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--text);outline:none}
+  .loc-search input::placeholder{color:var(--text-faint)}
+
+  .loc-options{overflow-y:auto;padding:6px;flex:1}
+  .loc-option{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:10px 12px;border-radius:10px;font-size:14px;color:var(--text);transition:background .15s;cursor:pointer}
+  .loc-option:hover,.loc-option.highlighted{background:var(--dropdown-hover)}
+  .loc-option.selected{background:rgba(16,185,129,.15);color:#10b981;font-weight:600}
+  [data-theme="light"] .loc-option.selected{color:#059669}
+  .loc-empty{padding:20px;text-align:center;font-size:13px;color:var(--text-faint)}
+  .loc-meta{font-size:11px;color:var(--text-faint);font-weight:400}
+
+  .loc-summary{margin-top:8px;padding:16px;border-radius:14px;background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(6,182,212,.08));border:1px solid rgba(16,185,129,.25);display:flex;align-items:center;gap:14px;animation:fadeUp .3s ease-out}
+  .loc-summary-icon{width:44px;height:44px;border-radius:12px;background:rgba(16,185,129,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .loc-summary-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:2px}
+  .loc-summary-sub{font-size:12px;color:var(--text-muted)}
+  .loc-summary-stats{display:flex;gap:18px;margin-top:10px;flex-wrap:wrap}
+  .loc-summary-stat{font-size:11px;color:var(--text-soft)}
+  .loc-summary-stat b{display:block;font-size:14px;color:var(--text);font-weight:700;margin-top:2px}
+
+  /* ===== MANUAL ENTRY ===== */
+  .manual-toggle{width:100%;padding:14px;border-radius:14px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:13px;font-weight:500;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+  .manual-toggle:hover{border-color:rgba(16,185,129,.5);color:#10b981;background:rgba(16,185,129,.05)}
+
+  .manual-banner{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);font-size:13px;color:var(--text-muted);flex-wrap:wrap}
+  [data-theme="light"] .manual-banner{background:rgba(251,191,36,.12);border-color:rgba(217,119,6,.3);color:rgba(15,23,42,.75)}
+  .manual-banner button{font-size:12px;color:#10b981;font-weight:600;padding:6px 10px;border-radius:8px;background:rgba(16,185,129,.1);white-space:nowrap}
+  .manual-banner button:hover{background:rgba(16,185,129,.2)}
+
+  .text-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px 14px 46px;font-size:15px;color:var(--text);outline:none;transition:all .2s;font-weight:500}
+  .text-input:focus{border-color:#10b981;box-shadow:0 0 0 3px var(--ring)}
+  .text-input::placeholder{color:var(--text-faint);font-weight:400}
+
+  .manual-note{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);font-size:13px;color:var(--text-muted);margin-bottom:20px}
+  [data-theme="light"] .manual-note{background:rgba(251,191,36,.12);border-color:rgba(217,119,6,.3);color:rgba(15,23,42,.75)}
+  .manual-note b{color:var(--text);font-weight:600}
+
+  @media(max-width:1024px){
+    .hero-content{grid-template-columns:1fr;gap:48px}
+    .grid-4{grid-template-columns:repeat(2,1fr)}
+    .grid-3{grid-template-columns:repeat(2,1fr)}
+    .stat-grid{grid-template-columns:repeat(2,1fr)}
+    .result-hero{grid-template-columns:1fr}
+    .nav-links{display:none}
+    .footer-grid{grid-template-columns:1fr 1fr}
+  }
+  @media(max-width:640px){
+    .grid-4,.grid-3,.grid-2{grid-template-columns:1fr}
+    .stat-grid{grid-template-columns:1fr 1fr}
+    .cta-box{padding:40px 24px}
+    .form-card{padding:24px}
+    .footer-grid{grid-template-columns:1fr}
+    .section{padding:64px 0}
+    .theme-toggle{width:56px;height:30px}
+    .theme-knob{width:22px;height:22px;top:3px;left:3px}
+    [data-theme="light"] .theme-knob{transform:translateX(26px)}
+  }
+  .hidden-mobile{display:flex}
+  @media(max-width:1024px){.hidden-mobile{display:none}}
+  .mobile-toggle{display:none;padding:8px;color:var(--text)}
+  @media(max-width:1024px){.mobile-toggle{display:block}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef, useMemo } = React;
+
+function useTheme() {
+  const [theme, setTheme] = useState(() => {
+    try {
+      const saved = localStorage.getItem('renewgenie-theme');
+      if (saved === 'light' || saved === 'dark') return saved;
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) return 'light';
+    } catch (e) {}
+    return 'dark';
+  });
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.style.background = theme === 'dark' ? '#0a0a0b' : '#fbfbfd';
+    document.body.style.background = theme === 'dark' ? '#0a0a0b' : '#fbfbfd';
+    document.body.style.color = theme === 'dark' ? '#f5f5f7' : '#0a0a0b';
+    try { localStorage.setItem('renewgenie-theme', theme); } catch (e) {}
+  }, [theme]);
+  return [theme, setTheme];
+}
+
+const Icon = ({ name, size = 20, color = "currentColor", strokeWidth = 2 }) => {
+  const p = {
+    sun:<><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></>,
+    moon:<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>,
+    leaf:<><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></>,
+    zap:<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>,
+    chart:<><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></>,
+    globe:<><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></>,
+    sparkles:<path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/>,
+    check:<polyline points="20 6 9 17 4 12"/>,
+    arrow:<><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></>,
+    home:<><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></>,
+    farm:<><path d="M2 20h20M4 20V8l8-6 8 6v12M9 20v-6h6v6"/></>,
+    student:<><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></>,
+    business:<><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></>,
+    community:<><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></>,
+    battery:<><rect x="2" y="7" width="16" height="10" rx="2"/><line x1="22" y1="11" x2="22" y2="13"/></>,
+    dollar:<><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></>,
+    wind:<><path d="M9.59 4.59A2 2 0 1 1 11 8H2M12.59 19.41A2 2 0 1 0 14 16H2M17.73 7.73A2.5 2.5 0 1 1 19.5 12H2"/></>,
+    droplet:<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>,
+    menu:<><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></>,
+    x:<><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>,
+    trending:<><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></>,
+    shield:<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>,
+    users:<><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></>,
+    award:<><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></>,
+    target:<><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></>,
+    lightbulb:<><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.4 1 2.3h6c0-.9.4-1.8 1-2.3A7 7 0 0 0 12 2z"/></>,
+    file:<><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></>,
+    calculator:<><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="8" y2="10"/><line x1="12" y1="10" x2="12" y2="10"/><line x1="16" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="18"/><line x1="8" y1="18" x2="12" y2="18"/></>,
+    activity:<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>,
+    send:<><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></>,
+    download:<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></>,
+    star:<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>,
+    rocket:<><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></>,
+    refresh:<><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></>,
+    pin:<><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></>,
+    chevronDown:<polyline points="6 9 12 15 18 9"/>,
+    search:<><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></>,
+    map:<><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></>,
+    info:<><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></>,
+    edit:<><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></>,
+  };
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">{p[name]||null}</svg>
+  );
+};
+
+const fmtINR = n => "₹" + Math.round(n).toLocaleString('en-IN');
+const fmtNum = n => Math.round(n).toLocaleString('en-IN');
+
+/* ===== LOCATION DATABASE ===== */
+const LOCATION_DB = {
+  "India": {
+    currency: "INR", currencySymbol: "₹", rateToINR: 1,
+    states: {
+      "Delhi": { sunHours: 4.9, tariff: 8.5, irradiance: 5.4, cities: ["New Delhi","Dwarka","Rohini","Saket","Karol Bagh"] },
+      "Maharashtra": { sunHours: 5.1, tariff: 9.2, irradiance: 5.5, cities: ["Mumbai","Pune","Nagpur","Nashik","Aurangabad","Thane"] },
+      "Karnataka": { sunHours: 5.4, tariff: 8.2, irradiance: 5.8, cities: ["Bangalore","Mysore","Mangalore","Hubli","Belgaum"] },
+      "Tamil Nadu": { sunHours: 5.3, tariff: 7.8, irradiance: 5.6, cities: ["Chennai","Coimbatore","Madurai","Salem","Tiruchirappalli"] },
+      "Gujarat": { sunHours: 5.6, tariff: 7.5, irradiance: 5.9, cities: ["Ahmedabad","Surat","Vadodara","Rajkot","Gandhinagar"] },
+      "Rajasthan": { sunHours: 5.8, tariff: 7.9, irradiance: 6.2, cities: ["Jaipur","Jodhpur","Udaipur","Kota","Ajmer"] },
+      "Telangana": { sunHours: 5.3, tariff: 8.4, irradiance: 5.7, cities: ["Hyderabad","Warangal","Nizamabad","Karimnagar"] },
+      "West Bengal": { sunHours: 4.6, tariff: 8.8, irradiance: 5.0, cities: ["Kolkata","Howrah","Durgapur","Siliguri","Asansol"] },
+      "Uttar Pradesh": { sunHours: 5.0, tariff: 8.1, irradiance: 5.4, cities: ["Lucknow","Kanpur","Varanasi","Agra","Noida","Ghaziabad"] },
+      "Punjab": { sunHours: 5.2, tariff: 8.6, irradiance: 5.5, cities: ["Chandigarh","Ludhiana","Amritsar","Jalandhar","Patiala"] },
+      "Kerala": { sunHours: 4.8, tariff: 8.5, irradiance: 5.2, cities: ["Thiruvananthapuram","Kochi","Kozhikode","Thrissur","Kollam"] },
+      "Madhya Pradesh": { sunHours: 5.3, tariff: 7.8, irradiance: 5.7, cities: ["Bhopal","Indore","Jabalpur","Gwalior","Ujjain"] },
+      "Haryana": { sunHours: 5.1, tariff: 8.3, irradiance: 5.5, cities: ["Gurgaon","Faridabad","Panipat","Ambala","Hisar"] },
+      "Andhra Pradesh": { sunHours: 5.3, tariff: 8.0, irradiance: 5.7, cities: ["Visakhapatnam","Vijayawada","Guntur","Tirupati","Nellore"] },
+      "Odisha": { sunHours: 4.9, tariff: 8.0, irradiance: 5.3, cities: ["Bhubaneswar","Cuttack","Rourkela","Puri"] },
+      "Bihar": { sunHours: 4.9, tariff: 8.5, irradiance: 5.3, cities: ["Patna","Gaya","Bhagalpur","Muzaffarpur"] },
+      "Assam": { sunHours: 4.3, tariff: 8.4, irradiance: 4.7, cities: ["Guwahati","Dibrugarh","Silchar","Jorhat"] },
+      "Goa": { sunHours: 5.3, tariff: 9.0, irradiance: 5.6, cities: ["Panaji","Margao","Vasco da Gama"] },
+      "Himachal Pradesh": { sunHours: 4.6, tariff: 7.9, irradiance: 5.0, cities: ["Shimla","Manali","Dharamshala","Solan"] },
+      "Uttarakhand": { sunHours: 4.7, tariff: 8.2, irradiance: 5.1, cities: ["Dehradun","Haridwar","Nainital","Rishikesh"] },
+    }
+  },
+  "United States": {
+    currency: "USD", currencySymbol: "$", rateToINR: 0.012,
+    states: {
+      "California": { sunHours: 5.6, tariff: 0.28, irradiance: 5.8, cities: ["Los Angeles","San Diego","San Francisco","San Jose","Sacramento"] },
+      "Texas": { sunHours: 5.2, tariff: 0.14, irradiance: 5.4, cities: ["Houston","Dallas","Austin","San Antonio","Fort Worth"] },
+      "Arizona": { sunHours: 6.1, tariff: 0.13, irradiance: 6.5, cities: ["Phoenix","Tucson","Mesa","Scottsdale"] },
+      "New York": { sunHours: 4.3, tariff: 0.22, irradiance: 4.5, cities: ["New York City","Buffalo","Rochester","Albany","Syracuse"] },
+      "Florida": { sunHours: 5.4, tariff: 0.15, irradiance: 5.6, cities: ["Miami","Orlando","Tampa","Jacksonville"] },
+      "Nevada": { sunHours: 6.0, tariff: 0.13, irradiance: 6.4, cities: ["Las Vegas","Reno","Henderson"] },
+      "Colorado": { sunHours: 5.5, tariff: 0.14, irradiance: 5.8, cities: ["Denver","Colorado Springs","Aurora","Boulder"] },
+      "Massachusetts": { sunHours: 4.2, tariff: 0.25, irradiance: 4.5, cities: ["Boston","Cambridge","Worcester","Springfield"] },
+      "Washington": { sunHours: 3.6, tariff: 0.11, irradiance: 3.8, cities: ["Seattle","Spokane","Tacoma","Bellevue"] },
+      "Illinois": { sunHours: 4.5, tariff: 0.15, irradiance: 4.7, cities: ["Chicago","Aurora","Naperville","Springfield"] },
+    }
+  },
+  "United Kingdom": {
+    currency: "GBP", currencySymbol: "£", rateToINR: 0.0095,
+    states: {
+      "England": { sunHours: 3.7, tariff: 0.34, irradiance: 3.9, cities: ["London","Manchester","Birmingham","Liverpool","Bristol"] },
+      "Scotland": { sunHours: 3.4, tariff: 0.33, irradiance: 3.6, cities: ["Edinburgh","Glasgow","Aberdeen","Dundee"] },
+      "Wales": { sunHours: 3.5, tariff: 0.33, irradiance: 3.7, cities: ["Cardiff","Swansea","Newport"] },
+      "Northern Ireland": { sunHours: 3.3, tariff: 0.32, irradiance: 3.5, cities: ["Belfast","Derry","Lisburn"] },
+    }
+  },
+  "Australia": {
+    currency: "AUD", currencySymbol: "A$", rateToINR: 0.018,
+    states: {
+      "New South Wales": { sunHours: 5.0, tariff: 0.28, irradiance: 5.2, cities: ["Sydney","Newcastle","Wollongong"] },
+      "Victoria": { sunHours: 4.4, tariff: 0.27, irradiance: 4.6, cities: ["Melbourne","Geelong","Ballarat"] },
+      "Queensland": { sunHours: 5.4, tariff: 0.26, irradiance: 5.6, cities: ["Brisbane","Gold Coast","Cairns","Townsville"] },
+      "Western Australia": { sunHours: 5.6, tariff: 0.29, irradiance: 5.8, cities: ["Perth","Fremantle","Bunbury"] },
+      "South Australia": { sunHours: 5.1, tariff: 0.35, irradiance: 5.3, cities: ["Adelaide","Mount Gambier"] },
+    }
+  },
+  "Germany": {
+    currency: "EUR", currencySymbol: "€", rateToINR: 0.011,
+    states: {
+      "Bavaria": { sunHours: 3.9, tariff: 0.32, irradiance: 4.1, cities: ["Munich","Nuremberg","Augsburg"] },
+      "Baden-Württemberg": { sunHours: 3.9, tariff: 0.31, irradiance: 4.1, cities: ["Stuttgart","Freiburg","Mannheim"] },
+      "Berlin": { sunHours: 3.6, tariff: 0.33, irradiance: 3.8, cities: ["Berlin"] },
+      "North Rhine-Westphalia": { sunHours: 3.6, tariff: 0.31, irradiance: 3.8, cities: ["Cologne","Düsseldorf","Dortmund"] },
+    }
+  },
+  "Canada": {
+    currency: "CAD", currencySymbol: "C$", rateToINR: 0.016,
+    states: {
+      "Ontario": { sunHours: 4.2, tariff: 0.13, irradiance: 4.4, cities: ["Toronto","Ottawa","Hamilton","London"] },
+      "British Columbia": { sunHours: 3.8, tariff: 0.12, irradiance: 4.0, cities: ["Vancouver","Victoria","Surrey"] },
+      "Alberta": { sunHours: 4.6, tariff: 0.14, irradiance: 4.8, cities: ["Calgary","Edmonton","Red Deer"] },
+      "Quebec": { sunHours: 4.0, tariff: 0.09, irradiance: 4.2, cities: ["Montreal","Quebec City","Laval"] },
+    }
+  },
+  "United Arab Emirates": {
+    currency: "AED", currencySymbol: "د.إ", rateToINR: 0.044,
+    states: {
+      "Dubai": { sunHours: 6.0, tariff: 0.28, irradiance: 6.3, cities: ["Dubai","Jumeirah","Deira"] },
+      "Abu Dhabi": { sunHours: 6.1, tariff: 0.26, irradiance: 6.4, cities: ["Abu Dhabi","Al Ain"] },
+      "Sharjah": { sunHours: 6.0, tariff: 0.27, irradiance: 6.3, cities: ["Sharjah","Khor Fakkan"] },
+    }
+  },
+  "Singapore": {
+    currency: "SGD", currencySymbol: "S$", rateToINR: 0.016,
+    states: {
+      "Central": { sunHours: 4.4, tariff: 0.28, irradiance: 4.6, cities: ["Singapore","Orchard","Marina Bay"] },
+      "East": { sunHours: 4.4, tariff: 0.28, irradiance: 4.6, cities: ["Bedok","Tampines","Changi"] },
+      "West": { sunHours: 4.4, tariff: 0.28, irradiance: 4.6, cities: ["Jurong","Clementi","Bukit Batok"] },
+    }
+  },
+  "South Africa": {
+    currency: "ZAR", currencySymbol: "R", rateToINR: 0.22,
+    states: {
+      "Gauteng": { sunHours: 5.5, tariff: 2.8, irradiance: 5.8, cities: ["Johannesburg","Pretoria","Soweto"] },
+      "Western Cape": { sunHours: 5.4, tariff: 3.0, irradiance: 5.6, cities: ["Cape Town","Stellenbosch","George"] },
+      "KwaZulu-Natal": { sunHours: 4.9, tariff: 2.9, irradiance: 5.2, cities: ["Durban","Pietermaritzburg"] },
+    }
+  },
+};
+
+/* ===== MANUAL LOCATION DEFAULTS ===== */
+const MANUAL_DEFAULTS = {
+  india:         { sunHours:5.0, irradiance:5.3, tariffLocal:8.0,   rateToINR:1,      symbol:'₹',  currency:'INR', costPerKW:50000 },
+  usa:           { sunHours:4.8, irradiance:5.0, tariffLocal:0.15,  rateToINR:0.012,  symbol:'$',  currency:'USD', costPerKW:55000 },
+  uk:            { sunHours:3.6, irradiance:3.8, tariffLocal:0.30,  rateToINR:0.0095, symbol:'£',  currency:'GBP', costPerKW:50000 },
+  australia:     { sunHours:5.0, irradiance:5.2, tariffLocal:0.28,  rateToINR:0.018,  symbol:'A$', currency:'AUD', costPerKW:30000 },
+  canada:        { sunHours:4.2, irradiance:4.4, tariffLocal:0.13,  rateToINR:0.016,  symbol:'C$', currency:'CAD', costPerKW:40000 },
+  germany:       { sunHours:3.7, irradiance:3.9, tariffLocal:0.32,  rateToINR:0.011,  symbol:'€',  currency:'EUR', costPerKW:45000 },
+  uae:           { sunHours:6.0, irradiance:6.3, tariffLocal:0.27,  rateToINR:0.044,  symbol:'د.إ', currency:'AED', costPerKW:35000 },
+  singapore:     { sunHours:4.4, irradiance:4.6, tariffLocal:0.28,  rateToINR:0.016,  symbol:'S$', currency:'SGD', costPerKW:42000 },
+  southAfrica:   { sunHours:5.3, irradiance:5.5, tariffLocal:2.9,   rateToINR:0.22,   symbol:'R',  currency:'ZAR', costPerKW:28000 },
+  default:       { sunHours:4.8, irradiance:5.0, tariffLocal:0.15,  rateToINR:0.012,  symbol:'$',  currency:'USD', costPerKW:45000 },
+};
+
+function getManualDefaults(countryName) {
+  const c = (countryName || '').toLowerCase().trim();
+  if (c.includes('india')) return MANUAL_DEFAULTS.india;
+  if (c.includes('united states') || c === 'usa' || c === 'us' || c === 'america' || c.includes('u.s')) return MANUAL_DEFAULTS.usa;
+  if (c.includes('united kingdom') || c === 'uk' || c.includes('britain') || c.includes('england') || c.includes('scotland') || c.includes('wales')) return MANUAL_DEFAULTS.uk;
+  if (c.includes('australia')) return MANUAL_DEFAULTS.australia;
+  if (c.includes('canada')) return MANUAL_DEFAULTS.canada;
+  if (c.includes('germany') || c.includes('deutschland')) return MANUAL_DEFAULTS.germany;
+  if (c.includes('emirates') || c.includes('uae') || c.includes('dubai')) return MANUAL_DEFAULTS.uae;
+  if (c.includes('singapore')) return MANUAL_DEFAULTS.singapore;
+  if (c.includes('south africa')) return MANUAL_DEFAULTS.southAfrica;
+  return MANUAL_DEFAULTS.default;
+}
+
+/* ===== LOCATION SELECTOR COMPONENT ===== */
+function LocationSelector({ value, onChange }) {
+  const { country = '', state = '', city = '', district = '', manual = false } = value || {};
+  const [openField, setOpenField] = useState(null);
+  const [searches, setSearches] = useState({ country: '', state: '', city: '' });
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const onDocClick = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setOpenField(null);
+        setSearches({ country:'', state:'', city:'' });
+      }
+    };
+    document.addEventListener('mousedown', onDocClick);
+    return () => document.removeEventListener('mousedown', onDocClick);
+  }, []);
+
+  const countries = Object.keys(LOCATION_DB);
+  const states = country && LOCATION_DB[country] ? Object.keys(LOCATION_DB[country].states) : [];
+  const cities = (country && state && LOCATION_DB[country]?.states[state]) ? LOCATION_DB[country].states[state].cities : [];
+
+  const filterList = (list, q) => q ? list.filter(i => i.toLowerCase().includes(q.toLowerCase())) : list;
+
+  const handleCountrySelect = (c) => {
+    onChange({ country: c, state: '', city: '', district: '', manual: false });
+    setOpenField('state');
+    setSearches({ ...searches, country: '' });
+  };
+  const handleStateSelect = (s) => {
+    onChange({ ...value, state: s, city: '', district: '', manual: false });
+    setOpenField('city');
+    setSearches({ ...searches, state: '' });
+  };
+  const handleCitySelect = (c) => {
+    onChange({ ...value, city: c, manual: false });
+    setOpenField(null);
+    setSearches({ ...searches, city: '' });
+  };
+
+  const switchToManual = () => {
+    onChange({ country, state, city, district: '', manual: true });
+    setOpenField(null);
+  };
+  const switchToDropdown = () => {
+    // Preserve selections that match the DB
+    const validCountry = LOCATION_DB[country] ? country : '';
+    const validState = validCountry && LOCATION_DB[validCountry].states[state] ? state : '';
+    const validCity = validState && LOCATION_DB[validCountry].states[validState].cities.includes(city) ? city : '';
+    onChange({ country: validCountry, state: validState, city: validCity, district: '', manual: false });
+    setOpenField(null);
+  };
+
+  const meta = !manual && country && state && LOCATION_DB[country]?.states[state] ? LOCATION_DB[country].states[state] : null;
+  const regionMeta = !manual && country ? LOCATION_DB[country] : null;
+
+  /* ===== MANUAL MODE ===== */
+  if (manual) {
+    const setField = (k, v) => onChange({ ...value, [k]: v });
+    return (
+      <div className="loc-selector" ref={containerRef}>
+        <div className="manual-banner">
+          <Icon name="edit" size={18} color="#f59e0b"/>
+          <div style={{flex:1,minWidth:200}}>
+            <div style={{fontWeight:600,color:'var(--text)',marginBottom:2}}>Manual location entry</div>
+            <div>We'll use regional averages for your analysis.</div>
+          </div>
+          <button onClick={switchToDropdown}>← Back to list</button>
+        </div>
+
+        <div className="loc-field">
+          <div className="loc-label"><Icon name="globe" size={12}/> Country <span style={{color:'#f59e0b'}}>*</span></div>
+          <div className="loc-input-wrap">
+            <span className="loc-input-icon"><Icon name="globe" size={18}/></span>
+            <input className="text-input" value={country} onChange={e => setField('country', e.target.value)} placeholder="e.g. Nepal" autoFocus/>
+          </div>
+        </div>
+
+        <div className="loc-field">
+          <div className="loc-label"><Icon name="map" size={12}/> State / Province <span style={{color:'#f59e0b'}}>*</span></div>
+          <div className="loc-input-wrap">
+            <span className="loc-input-icon"><Icon name="map" size={18}/></span>
+            <input className="text-input" value={state} onChange={e => setField('state', e.target.value)} placeholder="e.g. Bagmati"/>
+          </div>
+        </div>
+
+        <div className="loc-field">
+          <div className="loc-label"><Icon name="pin" size={12}/> District <span style={{color:'var(--text-faint)',fontWeight:400,textTransform:'none',letterSpacing:0}}>(optional)</span></div>
+          <div className="loc-input-wrap">
+            <span className="loc-input-icon"><Icon name="pin" size={18}/></span>
+            <input className="text-input" value={district} onChange={e => setField('district', e.target.value)} placeholder="e.g. Kathmandu"/>
+          </div>
+        </div>
+
+        <div className="loc-field">
+          <div className="loc-label"><Icon name="pin" size={12}/> City / Town <span style={{color:'#f59e0b'}}>*</span></div>
+          <div className="loc-input-wrap">
+            <span className="loc-input-icon"><Icon name="pin" size={18}/></span>
+            <input className="text-input" value={city} onChange={e => setField('city', e.target.value)} placeholder="e.g. Thamel"/>
+          </div>
+        </div>
+
+        {country && state && city && (
+          <div className="loc-summary">
+            <div className="loc-summary-icon"><Icon name="pin" size={20} color="#10b981"/></div>
+            <div style={{flex:1}}>
+              <div className="loc-summary-title">{[city, district, state, country].filter(Boolean).join(', ')}</div>
+              <div className="loc-summary-sub">Using regional averages for analysis</div>
+              <div className="loc-summary-stats">
+                <div className="loc-summary-stat">Peak Sun<b>~{getManualDefaults(country).sunHours} hrs/day</b></div>
+                <div className="loc-summary-stat">Tariff<b>~{getManualDefaults(country).symbol}{getManualDefaults(country).tariffLocal}/unit</b></div>
+                <div className="loc-summary-stat">Currency<b>{getManualDefaults(country).currency}</b></div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  /* ===== DROPDOWN MODE ===== */
+  const Field = ({ label, icon, placeholder, value, disabled, options, openKey, onSelect, getMeta }) => {
+    const isOpen = openField === openKey;
+    const query = searches[openKey] || '';
+    const filtered = filterList(options, query);
+    return (
+      <div className="loc-field">
+        <div className="loc-label"><Icon name={icon} size={12}/> {label}</div>
+        <div className="loc-input-wrap">
+          <span className="loc-input-icon"><Icon name={icon} size={18}/></span>
+          <input
+            type="text"
+            className={`loc-input ${isOpen ? 'open' : ''}`}
+            value={isOpen ? query : (value || '')}
+            placeholder={placeholder}
+            disabled={disabled}
+            readOnly={!isOpen}
+            onChange={(e) => setSearches({ ...searches, [openKey]: e.target.value })}
+            onClick={() => !disabled && setOpenField(isOpen ? null : openKey)}
+            onFocus={() => !disabled && setOpenField(openKey)}
+          />
+          <span className={`loc-chevron ${isOpen ? 'open' : ''}`}><Icon name="chevronDown" size={16}/></span>
+        </div>
+        {isOpen && (
+          <div className="loc-dropdown">
+            <div className="loc-search">
+              <input autoFocus type="text" placeholder={`Search ${label.toLowerCase()}...`} value={query}
+                onChange={e => setSearches({ ...searches, [openKey]: e.target.value })}/>
+            </div>
+            <div className="loc-options">
+              {filtered.length === 0 && (
+                <div className="loc-empty">
+                  No results for "{query}"
+                  {openKey === 'city' && (
+                    <div style={{marginTop:10}}>
+                      <button onClick={switchToManual} style={{color:'#10b981',fontWeight:600,fontSize:12}}>
+                        <Icon name="edit" size={12}/> Enter "{query}" manually
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+              {filtered.map(opt => {
+                const m = getMeta ? getMeta(opt) : null;
+                return (
+                  <button key={opt} className={`loc-option ${value === opt ? 'selected' : ''}`} onClick={() => onSelect(opt)}>
+                    <span>{opt}</span>
+                    {m && <span className="loc-meta">{m}</span>}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="loc-selector" ref={containerRef}>
+      <Field
+        label="Country" icon="globe" placeholder="Select country"
+        value={country} options={countries} openKey="country" onSelect={handleCountrySelect}
+      />
+      <Field
+        label="State / Province" icon="map" placeholder={country ? "Select state" : "Select country first"}
+        value={state} disabled={!country} options={states} openKey="state" onSelect={handleStateSelect}
+        getMeta={(s) => LOCATION_DB[country].states[s].sunHours + ' kWh/m²'}
+      />
+      <Field
+        label="City / District" icon="pin" placeholder={state ? "Select city" : "Select state first"}
+        value={city} disabled={!state} options={cities} openKey="city" onSelect={handleCitySelect}
+      />
+
+      {meta && city && (
+        <div className="loc-summary">
+          <div className="loc-summary-icon"><Icon name="pin" size={20} color="#10b981"/></div>
+          <div style={{flex:1}}>
+            <div className="loc-summary-title">{city}, {state}</div>
+            <div className="loc-summary-sub">{country}</div>
+            <div className="loc-summary-stats">
+              <div className="loc-summary-stat">Peak Sun<b>{meta.sunHours} hrs/day</b></div>
+              <div className="loc-summary-stat">Tariff<b>{regionMeta.currencySymbol}{meta.tariff}/unit</b></div>
+              <div className="loc-summary-stat">Irradiance<b>{meta.irradiance} kWh/m²</b></div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <button className="manual-toggle" onClick={switchToManual}>
+        <Icon name="edit" size={14}/>
+        Can't find your location? Enter manually
+        <Icon name="arrow" size={14}/>
+      </button>
+    </div>
+  );
+}
+
+/* ===== SCHEMES / FAQ ===== */
+const SCHEMES = [
+  { id:1, name:"PM Surya Ghar: Muft Bijli Yojana", category:"Solar", subsidy:"Up to ₹78,000", detail:"Free electricity up to 300 units/month for residential rooftop solar installations.", eligibility:"Residential homeowners (India)", icon:"sun" },
+  { id:2, name:"PM-KUSUM Yojana", category:"Solar", subsidy:"60% subsidy", detail:"Solar pumps for farmers to reduce diesel dependency and boost irrigation.", eligibility:"Farmers with land (India)", icon:"farm" },
+  { id:3, name:"National Biogas Programme", category:"Biogas", subsidy:"Up to ₹35,000", detail:"Family-size biogas plants for clean cooking fuel in rural households.", eligibility:"Rural households (India)", icon:"droplet" },
+  { id:4, name:"Solar Rooftop for Commercial", category:"Solar", subsidy:"40% subsidy", detail:"Subsidies for commercial & institutional solar rooftop installations.", eligibility:"Businesses, institutions (India)", icon:"business" },
+  { id:5, name:"Green Energy Corridor", category:"Wind", subsidy:"Tax benefits", detail:"Infrastructure for wind & solar power evacuation with tax incentives.", eligibility:"Wind farm developers (India)", icon:"wind" },
+  { id:6, name:"Rooftop Solar for Housing Societies", category:"Solar", subsidy:"20% extra subsidy", detail:"Additional subsidy for group housing societies adopting solar.", eligibility:"Housing societies (India)", icon:"community" },
+  { id:7, name:"Federal Solar Investment Tax Credit (ITC)", category:"Solar", subsidy:"30% tax credit", detail:"US federal tax credit covering 30% of solar installation costs.", eligibility:"US taxpayers", icon:"sun" },
+  { id:8, name:"Smart Export Guarantee (SEG)", category:"Solar", subsidy:"Paid for exports", detail:"UK scheme paying homeowners for surplus solar electricity exported to grid.", eligibility:"UK homeowners", icon:"zap" },
+  { id:9, name:"Australia STC Rebate", category:"Solar", subsidy:"~A$3,000", detail:"Small-scale Technology Certificates reduce upfront solar cost.", eligibility:"Australian residents", icon:"sun" },
+  { id:10, name:"Germany KfW Solar Funding", category:"Solar", subsidy:"Low-interest loans", detail:"KfW bank provides subsidized loans for solar + storage installations.", eligibility:"German residents", icon:"business" },
+];
+
+const FAQS = [
+  { q:"How accurate is the AI recommendation?", a:"Our engine uses your specific location's solar irradiance, local tariff rates, and applicable subsidies to calculate payback, ROI, and CO₂ savings. Accuracy is typically within ±10% for well-input profiles." },
+  { q:"What if my city isn't in the list?", a:"Simply click 'Can't find your location? Enter manually' in Step 2. Type your country, state, district, and city — we'll use regional averages to give you an approximate analysis." },
+  { q:"What's the typical payback period for solar?", a:"Payback varies by country: 4–6 years in India, 7–10 years in the US/UK, 3–5 years in Australia. After payback, you're essentially generating free electricity for 20+ more years." },
+  { q:"Can I install without a subsidy?", a:"Yes. Subsidies accelerate ROI, but panels remain economically attractive without them, especially as grid tariffs rise 5–8% annually." },
+  { q:"What about cloudy days and nights?", a:"Grid-tied systems draw from the grid when solar isn't generating. Battery-backed systems store surplus for evening use." },
+];
+
+/* ===== THEME TOGGLE ===== */
+function ThemeToggle({ theme, setTheme }) {
+  const isDark = theme === 'dark';
+  return (
+    <button className="theme-toggle" onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+      title={`Switch to ${isDark ? 'light' : 'dark'} mode`}>
+      <div className="theme-knob">
+        <Icon name={isDark ? 'moon' : 'sun'} size={14} color="#fff"/>
+      </div>
+      <div className="theme-icons">
+        <Icon name={isDark ? 'sun' : 'moon'} size={14}/>
+      </div>
+    </button>
+  );
+}
+
+/* ===== NAVBAR ===== */
+function Navbar({ page, setPage, theme, setTheme }) {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  const links = [
+    { id:'home', label:'Home' }, { id:'advisor', label:'AI Advisor' },
+    { id:'calculator', label:'Calculator' }, { id:'schemes', label:'Schemes' },
+    { id:'impact', label:'Impact' }, { id:'insights', label:'Insights' },
+  ];
+  const go = id => { setPage(id); setMobileOpen(false); window.scrollTo({top:0,behavior:'smooth'}); };
+  return (
+    <nav className={`nav ${scrolled?'scrolled':''}`}>
+      <div className="nav-inner">
+        <div className="nav-row">
+          <button className="brand" onClick={()=>go('home')}>
+            <div className="brand-badge"><Icon name="zap" size={20} color="#fff"/></div>
+            <span>Renew<span className="grad-text">Genie</span></span>
+          </button>
+          <div className="nav-links">
+            {links.map(l=>(
+              <button key={l.id} className={`nav-link ${page===l.id?'active':''}`} onClick={()=>go(l.id)}>{l.label}</button>
+            ))}
+          </div>
+          <div style={{display:'flex',gap:12,alignItems:'center'}}>
+            <ThemeToggle theme={theme} setTheme={setTheme}/>
+            <button className="btn-primary hidden-mobile" onClick={()=>go('advisor')}>Get Started</button>
+            <button className="mobile-toggle" onClick={()=>setMobileOpen(!mobileOpen)}>
+              <Icon name={mobileOpen?'x':'menu'} size={22}/>
+            </button>
+          </div>
+        </div>
+        {mobileOpen && (
+          <div style={{background:'var(--glass-strong-bg)',border:'1px solid var(--border)',borderRadius:16,padding:12,marginTop:8}}>
+            {links.map(l=>(
+              <button key={l.id} onClick={()=>go(l.id)} style={{display:'block',width:'100%',textAlign:'left',padding:'12px 16px',borderRadius:8,fontSize:14,fontWeight:500,background:page===l.id?'var(--hover-bg-strong)':'transparent',color:'var(--text)'}}>{l.label}</button>
+            ))}
+          </div>
+        )}
+      </div>
+    </nav>
+  );
+}
+
+/* ===== HOME ===== */
+function HomePage({ setPage }) {
+  const [counts, setCounts] = useState({ users:0, kwh:0, co2:0, saved:0 });
+  useEffect(() => {
+    const targets = { users:12847, kwh:48200000, co2:34200, saved:89200000 };
+    const start = Date.now(), dur = 2000;
+    const tick = () => {
+      const t = Math.min((Date.now()-start)/dur, 1);
+      const e = 1 - Math.pow(1-t, 3);
+      setCounts({ users:Math.round(targets.users*e), kwh:Math.round(targets.kwh*e), co2:Math.round(targets.co2*e), saved:Math.round(targets.saved*e) });
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    tick();
+  }, []);
+
+  const userTypes = [
+    { icon:'home', title:'Homeowners', desc:'Rooftop solar, savings, subsidies', color:'#10b981' },
+    { icon:'farm', title:'Farmers', desc:'Solar pumps, biogas, irrigation', color:'#f59e0b' },
+    { icon:'student', title:'Students', desc:'Learn, simulate, and win hackathons', color:'#06b6d4' },
+    { icon:'business', title:'Businesses', desc:'ROI, ESG, tax incentives', color:'#8b5cf6' },
+  ];
+  const features = [
+    { icon:'sparkles', title:'AI Recommendation Engine', desc:'Personalized renewable tech suggestions using your input profile.', color:'#10b981' },
+    { icon:'calculator', title:'Cost-Benefit Analyzer', desc:'Detailed ROI, payback, and 25-year projections for every option.', color:'#06b6d4' },
+    { icon:'leaf', title:'Carbon Footprint Tracker', desc:'See your CO₂ savings translated into trees planted and cars removed.', color:'#22c55e' },
+    { icon:'shield', title:'Govt. Scheme Matching', desc:'Instantly find relevant subsidies and policies for your profile.', color:'#f59e0b' },
+    { icon:'chart', title:'Solar Potential Mapping', desc:'Location-aware generation estimates using irradiance data.', color:'#8b5cf6' },
+    { icon:'file', title:'Detailed Reports', desc:'Downloadable PDF-ready summaries for family, school, or investors.', color:'#ec4899' },
+  ];
+
+  return (
+    <div>
+      <section className="hero">
+        <div className="hero-content">
+          <div>
+            <div className="badge-pill"><span className="badge-dot"></span><span style={{color:'var(--text-muted)'}}>Aligned with SDG 7, 11 & 13</span></div>
+            <h1>Power your future with <span className="grad-text">clean energy</span> intelligence.</h1>
+            <p className="lead">RenewGenie uses AI to help homeowners, farmers, students, and businesses make confident renewable energy decisions—cost, savings, carbon, and subsidies—all in one place.</p>
+            <div className="hero-buttons">
+              <button className="btn-primary" style={{padding:'16px 28px',display:'flex',alignItems:'center',gap:8,fontSize:15}} onClick={()=>setPage('advisor')}>
+                Get AI Recommendation <Icon name="arrow" size={16}/>
+              </button>
+              <button className="btn-ghost" style={{padding:'16px 28px',display:'flex',alignItems:'center',gap:8,fontSize:15}} onClick={()=>setPage('calculator')}>
+                <Icon name="calculator" size={16}/> Try Calculator
+              </button>
+            </div>
+            <div className="hero-features">
+              {['No signup required','Instant AI analysis','Govt. scheme matching'].map((f,i)=>(
+                <div key={i} className="hero-feature">
+                  <Icon name="check" size={16} color="#34d399"/>{f}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="float-card">
+            <div style={{position:'relative',zIndex:1}}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:24}}>
+                <div>
+                  <div style={{fontSize:12,textTransform:'uppercase',letterSpacing:'.15em',color:'#10b981',fontWeight:600,marginBottom:4}}>Live Analysis</div>
+                  <div style={{fontSize:24,fontWeight:700,color:'var(--text)'}}>Your Solar Potential</div>
+                </div>
+                <Icon name="sun" size={40} color="#fbbf24"/>
+              </div>
+              {[
+                { label:'Recommended', value:'5 kW Rooftop Solar', icon:'sparkles' },
+                { label:'Est. Investment', value:fmtINR(45000)+' after subsidy', icon:'dollar' },
+                { label:'Annual Savings', value:fmtINR(28000), icon:'trending' },
+                { label:'Payback Period', value:'1.6 years', icon:'target' },
+              ].map((r,i)=>(
+                <div key={i} className="stat-row">
+                  <div className="stat-label"><Icon name={r.icon} size={16} color="#10b981"/>{r.label}</div>
+                  <div className="stat-value">{r.value}</div>
+                </div>
+              ))}
+              <div style={{padding:16,borderRadius:16,background:'linear-gradient(90deg,rgba(16,185,129,.2),rgba(6,182,212,.2))',border:'1px solid rgba(16,185,129,.3)',marginTop:16,display:'flex',alignItems:'center',gap:12}}>
+                <Icon name="leaf" size={22} color="#10b981"/>
+                <div>
+                  <div style={{fontSize:12,color:'var(--text-muted)'}}>CO₂ offset annually</div>
+                  <div style={{fontSize:18,fontWeight:700,color:'var(--text)'}}>6.5 tonnes 🌱</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section style={{padding:'80px 0',borderTop:'1px solid var(--border-soft)',borderBottom:'1px solid var(--border-soft)'}}>
+        <div className="section-inner">
+          <div className="stat-grid">
+            {[
+              { label:'Active Users', value:fmtNum(counts.users)+'+', icon:'users', color:'#10b981' },
+              { label:'Clean kWh Generated', value:fmtNum(counts.kwh/1000)+'K+', icon:'zap', color:'#06b6d4' },
+              { label:'Tonnes CO₂ Avoided', value:fmtNum(counts.co2)+'t', icon:'leaf', color:'#22c55e' },
+              { label:'Money Saved', value:fmtINR(counts.saved), icon:'dollar', color:'#8b5cf6' },
+            ].map((s,i)=>(
+              <div key={i} className="stat-block">
+                <div className="stat-icon" style={{background:s.color+'15'}}><Icon name={s.icon} size={24} color={s.color}/></div>
+                <div className="stat-num">{s.value}</div>
+                <div className="stat-lbl">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="section-inner">
+          <div className="section-header">
+            <div className="eyebrow">Built for everyone</div>
+            <h2 className="section-title">One platform, <span className="grad-text">tailored insights</span></h2>
+            <p className="section-sub">Whether you own a rooftop, a farm, a business, or you're starting your sustainability journey—RenewGenie meets you where you are.</p>
+          </div>
+          <div className="grid-4">
+            {userTypes.map((c,i)=>(
+              <button key={i} className="feature-card" onClick={()=>setPage('advisor')}>
+                <div className="feature-icon" style={{background:c.color+'15',border:`1px solid ${c.color}30`}}>
+                  <Icon name={c.icon} size={28} color={c.color}/>
+                </div>
+                <h3>{c.title}</h3>
+                <p>{c.desc}</p>
+                <div style={{display:'flex',alignItems:'center',gap:4,marginTop:16,fontSize:14,fontWeight:500,color:'#10b981'}}>
+                  Explore <Icon name="arrow" size={14}/>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section" style={{background:'linear-gradient(180deg,transparent,rgba(16,185,129,.04),transparent)'}}>
+        <div className="section-inner">
+          <div className="section-header">
+            <div className="eyebrow">Features</div>
+            <h2 className="section-title">Everything you need to go green</h2>
+          </div>
+          <div className="grid-3">
+            {features.map((f,i)=>(
+              <div key={i} className="feature-card" style={{cursor:'default'}}>
+                <div className="feature-icon" style={{background:f.color+'15',border:`1px solid ${f.color}30`}}>
+                  <Icon name={f.icon} size={24} color={f.color}/>
+                </div>
+                <h3 style={{fontSize:18}}>{f.title}</h3>
+                <p>{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="section-inner" style={{maxWidth:900}}>
+          <div className="cta-box">
+            <Icon name="rocket" size={56} color="#10b981" style={{marginBottom:24}}/>
+            <h2>Ready to go renewable?</h2>
+            <p>Get your personalized AI recommendation in under 60 seconds. Free, instant, no signup required.</p>
+            <button className="btn-primary" style={{padding:'16px 32px',display:'inline-flex',alignItems:'center',gap:8,fontSize:15}} onClick={()=>setPage('advisor')}>
+              Start Free Analysis <Icon name="arrow" size={16}/>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <Footer setPage={setPage}/>
+    </div>
+  );
+}
+
+/* ===== ADVISOR ===== */
+function AdvisorPage() {
+  const [step, setStep] = useState(0);
+  const [form, setForm] = useState({
+    userType:'',
+    location: { country:'', state:'', city:'', district:'', manual: false },
+    monthlyBill:'', roofArea:'', budget:''
+  });
+  const [result, setResult] = useState(null);
+
+  const steps = [
+    { key:'userType', title:'Who are you?', subtitle:'We tailor recommendations to your profile.' },
+    { key:'location', title:'Where are you located?', subtitle:'Solar irradiance, tariffs, and subsidies vary by region.' },
+    { key:'monthlyBill', title:'Monthly electricity bill?', subtitle:'Helps size your system accurately.' },
+    { key:'roofArea', title:'Available area (sq. ft.)?', subtitle:'Determines maximum capacity.' },
+    { key:'budget', title:'Budget comfort zone?', subtitle:'We recommend technologies within reach.' },
+  ];
+
+  const userTypes = [
+    { id:'homeowner', label:'Homeowner', icon:'home', desc:'Rooftop solar, savings' },
+    { id:'farmer', label:'Farmer', icon:'farm', desc:'Solar pumps, biogas' },
+    { id:'student', label:'Student', icon:'student', desc:'Learn & simulate' },
+    { id:'business', label:'Business', icon:'business', desc:'ROI & ESG' },
+    { id:'community', label:'Community', icon:'community', desc:'Group projects' },
+  ];
+
+  const isLocationComplete = form.location.country && form.location.state && form.location.city;
+
+  const analyze = () => {
+    const bill = parseFloat(form.monthlyBill) || 2000;
+    const area = parseFloat(form.roofArea) || 500;
+
+    let sunHours, irradiance, tariffLocal, tariffINR, currencySymbol, currency, costPerKWINR, locationString, usedManual;
+
+    if (form.location.manual) {
+      // Use regional defaults based on country name
+      const d = getManualDefaults(form.location.country);
+      sunHours = d.sunHours;
+      irradiance = d.irradiance;
+      tariffLocal = d.tariffLocal;
+      tariffINR = tariffLocal / d.rateToINR;
+      currencySymbol = d.symbol;
+      currency = d.currency;
+      costPerKWINR = d.costPerKW;
+      locationString = [form.location.city, form.location.district, form.location.state, form.location.country].filter(Boolean).join(', ');
+      usedManual = true;
+    } else {
+      const locData = LOCATION_DB[form.location.country].states[form.location.state];
+      const regionMeta = LOCATION_DB[form.location.country];
+      sunHours = locData.sunHours;
+      irradiance = locData.irradiance;
+      tariffLocal = locData.tariff;
+      tariffINR = tariffLocal / regionMeta.rateToINR;
+      currencySymbol = regionMeta.currencySymbol;
+      currency = regionMeta.currency;
+      costPerKWINR = form.location.country === 'India' ? 11000 :
+                     form.location.country === 'United States' ? 55000 :
+                     form.location.country === 'United Kingdom' ? 50000 :
+                     form.location.country === 'Australia' ? 30000 :
+                     form.location.country === 'Germany' ? 45000 :
+                     form.location.country === 'Canada' ? 40000 :
+                     form.location.country === 'United Arab Emirates' ? 35000 :
+                     form.location.country === 'Singapore' ? 42000 :
+                     form.location.country === 'South Africa' ? 28000 : 45000;
+      locationString = `${form.location.city}, ${form.location.state}, ${form.location.country}`;
+      usedManual = false;
+    }
+
+    const monthlyUnits = bill / tariffINR;
+    const billKW = monthlyUnits / (sunHours * 30);
+    const areaKW = area / 100;
+    const maxKW = Math.max(1, Math.min(billKW, areaKW, 15));
+
+    const panels = Math.round(maxKW * 20);
+    const systemCost = maxKW * costPerKWINR;
+
+    let subsidyRate = 0;
+    if (usedManual) {
+      // Generic 20% for unknown locations
+      subsidyRate = 0.2;
+      const c = form.location.country.toLowerCase();
+      if (c.includes('india')) subsidyRate = form.userType==='homeowner' ? 0.4 : form.userType==='farmer' ? 0.6 : 0.3;
+      else if (c.includes('united states') || c === 'usa' || c === 'us') subsidyRate = 0.3;
+      else if (c.includes('australia')) subsidyRate = 0.25;
+      else if (c.includes('germany')) subsidyRate = 0.2;
+    } else {
+      if (form.location.country === 'India') {
+        subsidyRate = form.userType==='homeowner' ? 0.4 : form.userType==='farmer' ? 0.6 : form.userType==='business' ? 0.4 : 0.3;
+      } else if (form.location.country === 'United States') subsidyRate = 0.3;
+      else if (form.location.country === 'United Kingdom') subsidyRate = 0.0;
+      else if (form.location.country === 'Australia') subsidyRate = 0.25;
+      else if (form.location.country === 'Germany') subsidyRate = 0.2;
+      else subsidyRate = 0.15;
+    }
+
+    const subsidy = systemCost * subsidyRate;
+    const netCost = systemCost - subsidy;
+
+    const annualGen = maxKW * sunHours * 365;
+    const annualSavings = annualGen * tariffINR;
+    const payback = netCost / annualSavings;
+    const lifetimeSavings = annualSavings * 25 - netCost;
+    const co2 = maxKW * 1.3;
+
+    const options = [
+      { tech:'Solar Rooftop', fit:95, cost:netCost, savings:annualSavings, payback, co2, icon:'sun', color:'#fbbf24',
+        reason:`Best fit for ${locationString} with ~${sunHours} hrs/day peak sun and ${currencySymbol}${tariffLocal}/unit tariff.` },
+      { tech:'Solar + Battery', fit:78, cost:netCost+80000, savings:annualSavings*1.1, payback:(netCost+80000)/(annualSavings*1.1), co2:co2*1.1, icon:'battery', color:'#06b6d4', reason:'Best for evening usage and outage protection.' },
+      { tech:'Biogas Plant', fit:form.userType==='farmer'?88:45, cost:65000, savings:18000, payback:3.6, co2:2.1, icon:'droplet', color:'#22c55e', reason:form.userType==='farmer'?'Excellent for farm waste and cooking fuel.':'Better suited for rural/farm settings.' },
+    ].sort((a,b)=>b.fit-a.fit);
+
+    setResult({
+      recommended:options[0], alternatives:options.slice(1),
+      systemSize:maxKW.toFixed(1), panels, subsidy, netCost,
+      annualSavings, payback:payback.toFixed(1), lifetimeSavings,
+      co2:co2.toFixed(1), trees:Math.round(co2*45),
+      sunHours, irradiance, tariffLocal, tariffINR,
+      currencySymbol, currency,
+      locationString, manualEntry: usedManual,
+    });
+  };
+
+  const restart = () => { setStep(0); setResult(null); setForm({ userType:'', location:{country:'',state:'',city:'',district:'',manual:false}, monthlyBill:'', roofArea:'', budget:'' }); };
+
+  const canProceed = () => {
+    if (step === 0) return !!form.userType;
+    if (step === 1) return isLocationComplete;
+    if (step === 2) return !!form.monthlyBill;
+    if (step === 3) return !!form.roofArea;
+    if (step === 4) return !!form.budget;
+    return false;
+  };
+
+  // For manual mode, use detected country for currency hints
+  const billSymbol = form.location.manual
+    ? getManualDefaults(form.location.country).symbol
+    : (LOCATION_DB[form.location.country]?.currencySymbol || '₹');
+
+  if (result) return <AdvisorResults result={result} form={form} restart={restart}/>;
+
+  return (
+    <div style={{minHeight:'100vh',paddingTop:112,paddingBottom:80,backgroundImage:'radial-gradient(at 20% 20%,var(--mesh-1) 0,transparent 50%),radial-gradient(at 80% 30%,var(--mesh-2) 0,transparent 50%)'}}>
+      <div style={{maxWidth:768,margin:'0 auto',padding:'0 24px'}}>
+        <div style={{textAlign:'center',marginBottom:48}}>
+          <div className="badge-pill" style={{marginBottom:20}}><Icon name="sparkles" size={14} color="#10b981"/><span style={{color:'var(--text-muted)'}}>AI-Powered Analysis</span></div>
+          <h1 className="section-title">Let's find your <span className="grad-text">ideal renewable setup</span></h1>
+          <p className="section-sub">Answer 5 quick questions. Get personalized recommendations instantly.</p>
+        </div>
+
+        <div className="progress-bar">
+          {steps.map((_,i)=><div key={i} className={`progress-seg ${i<=step?'active':''}`}/>)}
+        </div>
+
+        <div className="form-card" key={step}>
+          <div style={{marginBottom:32}}>
+            <div style={{fontSize:12,textTransform:'uppercase',letterSpacing:'.2em',color:'#10b981',fontWeight:600,marginBottom:8}}>Step {step+1} of {steps.length}</div>
+            <h2 style={{fontSize:28,fontWeight:700,marginBottom:6,color:'var(--text)'}}>{steps[step].title}</h2>
+            <p style={{color:'var(--text-soft)',fontSize:14}}>{steps[step].subtitle}</p>
+          </div>
+
+          {step===0 && (
+            <div className="option-grid">
+              {userTypes.map(u=>(
+                <button key={u.id} className={`option-btn ${form.userType===u.id?'selected':''}`} onClick={()=>setForm({...form,userType:u.id})}>
+                  <Icon name={u.icon} size={24} color="#10b981" style={{marginBottom:12}}/>
+                  <div className="opt-title">{u.label}</div>
+                  <div className="opt-desc">{u.desc}</div>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {step===1 && (
+            <LocationSelector
+              value={form.location}
+              onChange={(loc) => setForm({...form, location: loc})}
+            />
+          )}
+
+          {step===2 && (
+            <div>
+              <input type="number" className="big-input" value={form.monthlyBill} onChange={e=>setForm({...form,monthlyBill:e.target.value})} placeholder="e.g. 3000"/>
+              <div style={{fontSize:14,color:'var(--text-faint)',marginTop:12}}>
+                {form.location.country === 'India' ? 'Average Indian household: ₹1,500 – ₹5,000/month' :
+                 form.location.country === 'United States' ? 'Average US household: $100 – $250/month' :
+                 form.location.country === 'United Kingdom' ? 'Average UK household: £80 – £150/month' :
+                 'Enter your typical monthly bill'}
+              </div>
+              <div style={{display:'flex',gap:8,marginTop:16,flexWrap:'wrap'}}>
+                {(form.location.country === 'India' ? [1000,2500,5000,10000] :
+                  form.location.country === 'United States' ? [80,150,250,400] :
+                  form.location.country === 'United Kingdom' ? [60,100,150,250] :
+                  [100,200,500,1000]).map(v=><button key={v} className="chip" onClick={()=>setForm({...form,monthlyBill:String(v)})}>{billSymbol + v}</button>)}
+              </div>
+            </div>
+          )}
+
+          {step===3 && (
+            <div>
+              <input type="number" className="big-input" value={form.roofArea} onChange={e=>setForm({...form,roofArea:e.target.value})} placeholder="e.g. 500"/>
+              <div style={{fontSize:14,color:'var(--text-faint)',marginTop:12}}>Rule of thumb: ~100 sq. ft. per kW of solar</div>
+              <div style={{display:'flex',gap:8,marginTop:16,flexWrap:'wrap'}}>
+                {[200,500,1000,2000].map(v=><button key={v} className="chip" onClick={()=>setForm({...form,roofArea:String(v)})}>{v} sq ft</button>)}
+              </div>
+            </div>
+          )}
+
+          {step===4 && (
+            <div>
+              <input type="number" className="big-input" value={form.budget} onChange={e=>setForm({...form,budget:e.target.value})} placeholder="e.g. 100000"/>
+              <div style={{fontSize:14,color:'var(--text-faint)',marginTop:12}}>Include subsidies you can access</div>
+              <div style={{display:'flex',gap:8,marginTop:16,flexWrap:'wrap'}}>
+                {(form.location.country === 'India' ? [50000,100000,300000,500000] :
+                  form.location.country === 'United States' ? [3000,8000,15000,30000] :
+                  form.location.country === 'United Kingdom' ? [3000,6000,12000,25000] :
+                  [2000,5000,10000,20000]).map(v=><button key={v} className="chip" onClick={()=>setForm({...form,budget:String(v)})}>{billSymbol + v.toLocaleString()}</button>)}
+              </div>
+            </div>
+          )}
+
+          <div style={{display:'flex',justifyContent:'space-between',marginTop:40}}>
+            <button onClick={()=>setStep(Math.max(0,step-1))} disabled={step===0} style={{color:'var(--text-soft)',fontSize:14,padding:'8px 16px',opacity:step===0?.3:1}}>← Back</button>
+            <button className="btn-primary" style={{padding:'14px 28px',display:'flex',alignItems:'center',gap:8,opacity:!canProceed()?.3:1}} disabled={!canProceed()}
+              onClick={()=>step<steps.length-1?setStep(step+1):analyze()}>
+              {step===steps.length-1?<><Icon name="sparkles" size={16}/> Analyze</>:'Continue →'}
+            </button>
+          </div>
+        </div>
+
+        <div style={{textAlign:'center',fontSize:12,color:'var(--text-faint)',marginTop:32}}>🔒 Your data stays in your browser. No signup required.</div>
+      </div>
+    </div>
+  );
+}
+
+/* ===== ADVISOR RESULTS ===== */
+function AdvisorResults({ result, form, restart }) {
+  const r = result.recommended;
+  const curr = result.currencySymbol;
+  const fmtCurr = (n) => curr + Math.round(n).toLocaleString('en-IN');
+
+  return (
+    <div style={{minHeight:'100vh',paddingTop:112,paddingBottom:80,backgroundImage:'radial-gradient(at 20% 20%,var(--mesh-1) 0,transparent 50%)'}}>
+      <div style={{maxWidth:1024,margin:'0 auto',padding:'0 24px'}}>
+        <div style={{textAlign:'center',marginBottom:40}}>
+          <div className="badge-pill" style={{marginBottom:20}}><Icon name="check" size={14} color="#10b981"/><span style={{color:'var(--text-muted)'}}>Analysis Complete</span></div>
+          <h1 className="section-title">Your <span className="grad-text">personalized plan</span> is ready</h1>
+          <p className="section-sub">Based on <b style={{color:'var(--text)'}}>{result.locationString}</b> and your {form.userType} profile.</p>
+        </div>
+
+        {result.manualEntry && (
+          <div className="manual-note">
+            <Icon name="info" size={20} color="#f59e0b"/>
+            <span><b>Note:</b> "{result.locationString}" wasn't in our database. Results use regional averages and are approximate.</span>
+          </div>
+        )}
+
+        <div className="loc-summary" style={{marginBottom:24}}>
+          <div className="loc-summary-icon"><Icon name="pin" size={22} color="#10b981"/></div>
+          <div style={{flex:1}}>
+            <div className="loc-summary-title">{result.locationString}</div>
+            <div className="loc-summary-stats">
+              <div className="loc-summary-stat">Peak Sun<b>{result.sunHours} hrs/day</b></div>
+              <div className="loc-summary-stat">Tariff<b>{curr}{result.tariffLocal}/unit</b></div>
+              <div className="loc-summary-stat">Irradiance<b>{result.irradiance} kWh/m²</b></div>
+              <div className="loc-summary-stat">Currency<b>{result.currency}</b></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="glass-strong" style={{padding:40,marginBottom:24,position:'relative',overflow:'hidden'}}>
+          <div style={{position:'absolute',top:-128,right:-128,width:384,height:384,background:'rgba(16,185,129,.2)',borderRadius:'50%',filter:'blur(60px)'}}/>
+          <div className="result-hero" style={{position:'relative'}}>
+            <div>
+              <div className="rec-chip"><Icon name="star" size={12}/> TOP RECOMMENDATION · {r.fit}% MATCH</div>
+              <h2 className="rec-title"><Icon name={r.icon} size={40} color={r.color}/>{r.tech}</h2>
+              <p className="rec-desc">{r.reason}</p>
+              <div className="grid-2">
+                <div className="metric-box"><div className="metric-lbl">System Size</div><div className="metric-val">{result.systemSize} kW</div></div>
+                <div className="metric-box"><div className="metric-lbl">Panels</div><div className="metric-val">{result.panels}</div></div>
+              </div>
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:12}}>
+              {[
+                { label:'Investment (after subsidy)', value:fmtCurr(result.netCost), icon:'dollar', highlight:true },
+                { label:'Subsidy applicable', value:fmtCurr(result.subsidy), icon:'shield' },
+                { label:'Annual savings', value:fmtCurr(result.annualSavings), icon:'trending' },
+                { label:'Payback period', value:result.payback+' years', icon:'target' },
+                { label:'25-year net savings', value:fmtCurr(result.lifetimeSavings), icon:'award' },
+              ].map((row,i)=>(
+                <div key={i} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:16,borderRadius:16,
+                  background:row.highlight?'linear-gradient(90deg,rgba(16,185,129,.2),rgba(6,182,212,.2))':'var(--surface)',
+                  border:row.highlight?'1px solid rgba(16,185,129,.3)':'1px solid var(--border-soft)'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:12}}><Icon name={row.icon} size={16} color="#10b981"/><span style={{fontSize:14,color:'var(--text-muted)'}}>{row.label}</span></div>
+                  <span style={{fontWeight:700,color:'var(--text)'}}>{row.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="grid-3" style={{marginBottom:24}}>
+          {[
+            { label:'CO₂ avoided / year', value:result.co2+' tonnes', icon:'leaf', color:'#22c55e' },
+            { label:'Equivalent trees planted', value:fmtNum(result.trees), icon:'globe', color:'#10b981' },
+            { label:'Cars taken off road', value:(result.co2/4.6).toFixed(1), icon:'activity', color:'#06b6d4' },
+          ].map((s,i)=>(
+            <div key={i} className="glass" style={{padding:24}}>
+              <Icon name={s.icon} size={24} color={s.color} style={{marginBottom:12}}/>
+              <div style={{fontSize:28,fontWeight:900,marginBottom:4,color:'var(--text)'}}>{s.value}</div>
+              <div style={{fontSize:14,color:'var(--text-soft)'}}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+
+        <h3 style={{fontSize:24,fontWeight:700,marginBottom:16,color:'var(--text)'}}>Other suitable options</h3>
+        <div className="grid-2" style={{marginBottom:24}}>
+          {result.alternatives.map((alt,i)=>(
+            <div key={i} className="glass" style={{padding:24}}>
+              <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:16}}>
+                <div style={{width:40,height:40,borderRadius:12,background:alt.color+'15',display:'flex',alignItems:'center',justifyContent:'center'}}><Icon name={alt.icon} size={20} color={alt.color}/></div>
+                <div>
+                  <div style={{fontWeight:700,color:'var(--text)'}}>{alt.tech}</div>
+                  <div style={{fontSize:12,color:'var(--text-soft)'}}>{alt.fit}% match</div>
+                </div>
+              </div>
+              <p style={{fontSize:14,color:'var(--text-muted)',marginBottom:16}}>{alt.reason}</p>
+              <div className="grid-3" style={{textAlign:'center'}}>
+                <div style={{padding:8,background:'var(--surface)',borderRadius:12}}><div style={{fontSize:12,color:'var(--text-faint)'}}>Cost</div><div style={{fontSize:14,fontWeight:600,color:'var(--text)'}}>{fmtCurr(alt.cost)}</div></div>
+                <div style={{padding:8,background:'var(--surface)',borderRadius:12}}><div style={{fontSize:12,color:'var(--text-faint)'}}>Payback</div><div style={{fontSize:14,fontWeight:600,color:'var(--text)'}}>{alt.payback.toFixed(1)}y</div></div>
+                <div style={{padding:8,background:'var(--surface)',borderRadius:12}}><div style={{fontSize:12,color:'var(--text-faint)'}}>CO₂</div><div style={{fontSize:14,fontWeight:600,color:'var(--text)'}}>{alt.co2.toFixed(1)}t</div></div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="glass-strong" style={{padding:32,marginBottom:24}}>
+          <h3 style={{fontSize:20,fontWeight:700,marginBottom:20,display:'flex',alignItems:'center',gap:8,color:'var(--text)'}}><Icon name="rocket" size={20} color="#10b981"/> Recommended next steps</h3>
+          <div style={{display:'flex',flexDirection:'column',gap:12}}>
+            {[
+              `Get quotes from 2-3 certified installers${form.location.city ? ' in ' + form.location.city : ''}`,
+              form.location.country === 'India' ? 'Apply for subsidy via National Portal (solarrooftop.gov.in)' :
+              form.location.country === 'United States' ? 'File for 30% Federal ITC on your tax return' :
+              form.location.country === 'United Kingdom' ? 'Register for Smart Export Guarantee with your energy supplier' :
+              'Check local government rebate programs and incentives',
+              'Complete a site feasibility survey — usually free',
+              'Sign agreement, install, and set up net metering',
+            ].map((s,i)=>(
+              <div key={i} className="step-row">
+                <div className="step-num">{i+1}</div>
+                <div className="step-text">{s}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{display:'flex',gap:12,justifyContent:'center',flexWrap:'wrap'}}>
+          <button className="btn-ghost" style={{padding:'14px 24px',display:'flex',alignItems:'center',gap:8}} onClick={restart}><Icon name="refresh" size={16}/> Start Over</button>
+          <button className="btn-primary" style={{padding:'14px 24px',display:'flex',alignItems:'center',gap:8}} onClick={()=>window.print()}><Icon name="download" size={16}/> Save Report</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ===== CALCULATOR ===== */
+function CalculatorPage() {
+  const [inputs, setInputs] = useState({ systemSize:5, electricityRate:8, sunHours:4.5, costPerKW:55000, subsidy:40, degradation:0.5, tariffIncrease:5 });
+
+  const calc = useMemo(() => {
+    const { systemSize, electricityRate, sunHours, costPerKW, subsidy, degradation, tariffIncrease } = inputs;
+    const annualGenY1 = systemSize * sunHours * 365;
+    const grossCost = systemSize * costPerKW;
+    const subsidyAmt = grossCost * subsidy / 100;
+    const netCost = grossCost - subsidyAmt;
+    let cum = 0;
+    const years = [];
+    for (let y = 1; y <= 25; y++) {
+      const gen = annualGenY1 * Math.pow(1 - degradation/100, y-1);
+      const rate = electricityRate * Math.pow(1 + tariffIncrease/100, y-1);
+      const savings = gen * rate;
+      cum += savings;
+      years.push({ year:y, gen:Math.round(gen), savings:Math.round(savings), cum:Math.round(cum), net:Math.round(cum - netCost) });
+    }
+    const payback = years.find(y=>y.cum >= netCost)?.year || 25;
+    const lifetimeSavings = years[years.length-1].cum - netCost;
+    const co2 = systemSize * 1.3;
+    return { annualGenY1:Math.round(annualGenY1), grossCost, subsidyAmt, netCost, years, payback, lifetimeSavings, co2, lifetimeCO2:co2*25 };
+  }, [inputs]);
+
+  const update = (k,v) => setInputs({...inputs,[k]:parseFloat(v)||0});
+
+  const sliders = [
+    { key:'systemSize', label:'System Size', min:1, max:20, step:.5, unit:'kW', icon:'sun' },
+    { key:'electricityRate', label:'Electricity Rate', min:4, max:15, step:.5, unit:'₹/unit', icon:'zap' },
+    { key:'sunHours', label:'Peak Sun Hours', min:3, max:7, step:.1, unit:'hrs/day', icon:'activity' },
+    { key:'costPerKW', label:'Cost per kW', min:35000, max:80000, step:1000, unit:'₹', icon:'dollar' },
+    { key:'subsidy', label:'Subsidy', min:0, max:60, step:1, unit:'%', icon:'shield' },
+    { key:'degradation', label:'Panel Degradation', min:.2, max:1.5, step:.1, unit:'%/year', icon:'trending' },
+    { key:'tariffIncrease', label:'Tariff Increase', min:0, max:10, step:.5, unit:'%/year', icon:'chart' },
+  ];
+
+  const chartW = 800, chartH = 280, padL = 60, padR = 20, padT = 20, padB = 40;
+  const maxY = Math.max(...calc.years.map(y=>Math.max(y.cum, y.net)));
+  const minY = Math.min(0, ...calc.years.map(y=>y.net));
+  const scaleX = i => padL + (i/(calc.years.length-1))*(chartW-padL-padR);
+  const scaleY = v => chartH-padB - ((v-minY)/(maxY-minY))*(chartH-padT-padB);
+  const cumPath = calc.years.map((y,i)=>`${i===0?'M':'L'}${scaleX(i)},${scaleY(y.cum)}`).join(' ');
+  const netPath = calc.years.map((y,i)=>`${i===0?'M':'L'}${scaleX(i)},${scaleY(y.net)}`).join(' ');
+  const zeroY = scaleY(0);
+
+  return (
+    <div style={{minHeight:'100vh',paddingTop:112,paddingBottom:80}}>
+      <div style={{maxWidth:1200,margin:'0 auto',padding:'0 24px'}}>
+        <div className="section-header">
+          <div className="eyebrow">Interactive Tool</div>
+          <h1 className="section-title">Cost-Benefit <span className="grad-text">Analyzer</span></h1>
+          <p className="section-sub">Adjust parameters to see how they affect ROI, payback, and lifetime savings.</p>
+        </div>
+
+        <div style={{display:'grid',gridTemplateColumns:'2fr 3fr',gap:24}} className="calc-grid">
+          <div className="glass-strong" style={{padding:24}}>
+            <h3 style={{fontWeight:700,marginBottom:20,display:'flex',alignItems:'center',gap:8,color:'var(--text)'}}><Icon name="calculator" size={16} color="#10b981"/> Parameters</h3>
+            <div style={{display:'flex',flexDirection:'column',gap:20}}>
+              {sliders.map(s=>{
+                const pct = ((inputs[s.key]-s.min)/(s.max-s.min))*100;
+                return (
+                  <div key={s.key}>
+                    <div className="slide-header">
+                      <div className="slide-name"><Icon name={s.icon} size={14}/>{s.label}</div>
+                      <div className="slide-val">{s.key==='costPerKW'?fmtINR(inputs[s.key]):inputs[s.key]+' '+s.unit}</div>
+                    </div>
+                    <input type="range" className="slider" min={s.min} max={s.max} step={s.step} value={inputs[s.key]}
+                      onChange={e=>update(s.key,e.target.value)}
+                      style={{background:`linear-gradient(to right,#10b981 0%,#06b6d4 ${pct}%,var(--surface-2) ${pct}%)`}}/>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div style={{display:'flex',flexDirection:'column',gap:24}}>
+            <div className="grid-4">
+              {[
+                { label:'Net Investment', value:fmtINR(calc.netCost), icon:'dollar', color:'#8b5cf6' },
+                { label:'Annual Generation', value:fmtNum(calc.annualGenY1)+' kWh', icon:'zap', color:'#06b6d4' },
+                { label:'Payback', value:calc.payback+' yrs', icon:'target', color:'#f59e0b' },
+                { label:'25-yr Savings', value:fmtINR(calc.lifetimeSavings), icon:'award', color:'#10b981' },
+              ].map((m,i)=>(
+                <div key={i} className="glass" style={{padding:16}}>
+                  <Icon name={m.icon} size={16} color={m.color} style={{marginBottom:8}}/>
+                  <div style={{fontSize:16,fontWeight:700,color:'var(--text)'}}>{m.value}</div>
+                  <div style={{fontSize:12,color:'var(--text-faint)'}}>{m.label}</div>
+                </div>
+              ))}
+            </div>
+
+            <div className="glass-strong" style={{padding:24}}>
+              <h3 style={{fontWeight:700,marginBottom:16,display:'flex',alignItems:'center',gap:8,color:'var(--text)'}}><Icon name="chart" size={16} color="#10b981"/> 25-Year Financial Projection</h3>
+              <div className="chart-wrap">
+                <svg className="chart-svg" viewBox={`0 0 ${chartW} ${chartH}`} preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="cumGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#10b981" stopOpacity="0.4"/>
+                      <stop offset="100%" stopColor="#10b981" stopOpacity="0"/>
+                    </linearGradient>
+                    <linearGradient id="netGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.4"/>
+                      <stop offset="100%" stopColor="#a78bfa" stopOpacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  {[0,1,2,3,4].map(i=>{
+                    const y = padT + (i/4)*(chartH-padT-padB);
+                    const val = maxY - (i/4)*(maxY-minY);
+                    return (<g key={i}>
+                      <line x1={padL} y1={y} x2={chartW-padR} y2={y} stroke="var(--chart-grid)"/>
+                      <text x={padL-8} y={y+4} fill="var(--chart-axis)" fontSize="10" textAnchor="end">₹{(val/1000).toFixed(0)}k</text>
+                    </g>);
+                  })}
+                  <line x1={padL} y1={zeroY} x2={chartW-padR} y2={zeroY} stroke="var(--chart-zero)" strokeDasharray="4"/>
+                  <path d={`${cumPath} L${scaleX(24)},${chartH-padB} L${scaleX(0)},${chartH-padB} Z`} fill="url(#cumGrad)"/>
+                  <path d={`${netPath} L${scaleX(24)},${chartH-padB} L${scaleX(0)},${chartH-padB} Z`} fill="url(#netGrad)"/>
+                  <path d={cumPath} fill="none" stroke="#10b981" strokeWidth="2"/>
+                  <path d={netPath} fill="none" stroke="#a78bfa" strokeWidth="2"/>
+                  {calc.years.map((y,i)=>i%5===0 && (
+                    <text key={i} x={scaleX(i)} y={chartH-10} fill="var(--chart-axis)" fontSize="10" textAnchor="middle">Y{y.year}</text>
+                  ))}
+                </svg>
+              </div>
+              <div className="chart-legend">
+                <div><span className="legend-dot" style={{background:'#10b981'}}/>Cumulative savings</div>
+                <div><span className="legend-dot" style={{background:'#a78bfa'}}/>Net position</div>
+              </div>
+            </div>
+
+            <div className="grid-2">
+              <div className="glass" style={{padding:24}}>
+                <h4 style={{fontWeight:700,marginBottom:16,display:'flex',alignItems:'center',gap:8,color:'var(--text)'}}><Icon name="leaf" size={16} color="#10b981"/> Environmental Impact</h4>
+                <div style={{display:'flex',flexDirection:'column',gap:12}}>
+                  <div style={{display:'flex',justifyContent:'space-between'}}><span style={{fontSize:14,color:'var(--text-muted)'}}>Annual CO₂ avoided</span><span style={{fontWeight:700,color:'var(--text)'}}>{calc.co2.toFixed(1)} tonnes</span></div>
+                  <div style={{display:'flex',justifyContent:'space-between'}}><span style={{fontSize:14,color:'var(--text-muted)'}}>Lifetime CO₂ avoided</span><span style={{fontWeight:700,color:'var(--text)'}}>{calc.lifetimeCO2.toFixed(0)} tonnes</span></div>
+                  <div style={{display:'flex',justifyContent:'space-between'}}><span style={{fontSize:14,color:'var(--text-muted)'}}>Trees equivalent</span><span style={{fontWeight:700,color:'var(--text)'}}>{fmtNum(calc.lifetimeCO2*45)}</span></div>
+                </div>
+              </div>
+              <div className="glass" style={{padding:24}}>
+                <h4 style={{fontWeight:700,marginBottom:16,display:'flex',alignItems:'center',gap:8,color:'var(--text)'}}><Icon name="file" size={16} color="#10b981"/> Cost Breakdown</h4>
+                <div style={{display:'flex',flexDirection:'column',gap:12}}>
+                  <div style={{display:'flex',justifyContent:'space-between'}}><span style={{fontSize:14,color:'var(--text-muted)'}}>Gross cost</span><span style={{fontWeight:600,color:'var(--text)'}}>{fmtINR(calc.grossCost)}</span></div>
+                  <div style={{display:'flex',justifyContent:'space-between'}}><span style={{fontSize:14,color:'var(--text-muted)'}}>Subsidy</span><span style={{fontWeight:600,color:'#10b981'}}>− {fmtINR(calc.subsidyAmt)}</span></div>
+                  <div style={{height:1,background:'var(--border)'}}/>
+                  <div style={{display:'flex',justifyContent:'space-between'}}><span style={{fontSize:14,fontWeight:600,color:'var(--text)'}}>You pay</span><span style={{fontWeight:700}} className="grad-text">{fmtINR(calc.netCost)}</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <style>{`@media(max-width:900px){.calc-grid{grid-template-columns:1fr!important}}`}</style>
+    </div>
+  );
+}
+
+/* ===== SCHEMES ===== */
+function SchemesPage() {
+  const [filter, setFilter] = useState('All');
+  const [query, setQuery] = useState('');
+  const categories = ['All','Solar','Wind','Biogas','Hydro'];
+  const filtered = SCHEMES.filter(s =>
+    (filter==='All' || s.category===filter) &&
+    (s.name.toLowerCase().includes(query.toLowerCase()) || s.detail.toLowerCase().includes(query.toLowerCase()))
+  );
+
+  return (
+    <div style={{minHeight:'100vh',paddingTop:112,paddingBottom:80,backgroundImage:'radial-gradient(at 20% 20%,var(--mesh-1) 0,transparent 50%)'}}>
+      <div style={{maxWidth:1200,margin:'0 auto',padding:'0 24px'}}>
+        <div className="section-header">
+          <div className="eyebrow">Government Schemes</div>
+          <h1 className="section-title">Subsidies you <span className="grad-text">might qualify for</span></h1>
+          <p className="section-sub">Curated global incentives for renewable energy adoption.</p>
+        </div>
+
+        <div className="glass" style={{padding:16,marginBottom:32,display:'flex',gap:16,flexWrap:'wrap',alignItems:'center'}}>
+          <div className="search-box">
+            <Icon name="search" size={16}/>
+            <input type="text" placeholder="Search schemes..." value={query} onChange={e=>setQuery(e.target.value)}/>
+          </div>
+          <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+            {categories.map(c=>(
+              <button key={c} className={`filter-tab ${filter===c?'active':''}`} onClick={()=>setFilter(c)}>{c}</button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid-3">
+          {filtered.map(s=>(
+            <div key={s.id} className="scheme-card">
+              <div className="scheme-head">
+                <div style={{width:48,height:48,borderRadius:16,background:'rgba(16,185,129,.1)',border:'1px solid rgba(16,185,129,.2)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                  <Icon name={s.icon} size={24} color="#10b981"/>
+                </div>
+                <span className="scheme-cat">{s.category}</span>
+              </div>
+              <h3 className="scheme-title">{s.name}</h3>
+              <p className="scheme-desc">{s.detail}</p>
+              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16}}>
+                <Icon name="shield" size={14} color="#10b981"/>
+                <span style={{fontSize:12,color:'var(--text-soft)'}}>Eligibility: {s.eligibility}</span>
+              </div>
+              <div className="scheme-foot">
+                <div>
+                  <div style={{fontSize:12,color:'var(--text-faint)'}}>Subsidy</div>
+                  <div style={{fontWeight:700}} className="grad-text">{s.subsidy}</div>
+                </div>
+                <button style={{fontSize:14,fontWeight:600,color:'#10b981',display:'flex',alignItems:'center',gap:4}}>Learn more <Icon name="arrow" size={14}/></button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {filtered.length===0 && <div style={{textAlign:'center',padding:'80px 0',color:'var(--text-faint)'}}>No schemes match your search.</div>}
+      </div>
+    </div>
+  );
+}
+
+/* ===== IMPACT ===== */
+function ImpactPage() {
+  const sdgs = [
+    { num:7, title:'Affordable & Clean Energy', desc:'Ensure access to affordable, reliable, sustainable, and modern energy for all.', color:'#FDB713', progress:78 },
+    { num:11, title:'Sustainable Cities & Communities', desc:'Make cities inclusive, safe, resilient, and sustainable.', color:'#FD9D24', progress:65 },
+    { num:13, title:'Climate Action', desc:'Take urgent action to combat climate change and its impacts.', color:'#3F7E44', progress:71 },
+  ];
+  const impacts = [
+    { icon:'leaf', value:'34,200', label:'Tonnes CO₂ avoided', color:'#10b981' },
+    { icon:'zap', value:'48.2M', label:'kWh clean energy generated', color:'#06b6d4' },
+    { icon:'users', value:'12,847', label:'Active users guided', color:'#8b5cf6' },
+    { icon:'dollar', value:'₹89.2 Cr', label:'Consumer savings enabled', color:'#f59e0b' },
+  ];
+  return (
+    <div style={{minHeight:'100vh',paddingTop:112,paddingBottom:80}}>
+      <div style={{maxWidth:1200,margin:'0 auto',padding:'0 24px'}}>
+        <div className="section-header">
+          <div className="eyebrow">Our Impact</div>
+          <h1 className="section-title">Driving progress on <span className="grad-text">global goals</span></h1>
+          <p className="section-sub">RenewGenie directly contributes to three United Nations Sustainable Development Goals.</p>
+        </div>
+
+        <div className="grid-3" style={{marginBottom:64}}>
+          {sdgs.map(s=>(
+            <div key={s.num} className="impact-card">
+              <div style={{position:'absolute',top:0,right:0,width:128,height:128,borderRadius:'50%',background:s.color,filter:'blur(60px)',opacity:.3}}/>
+              <div style={{position:'relative'}}>
+                <div className="sdg-num" style={{background:s.color+'30',color:s.color,border:`1px solid ${s.color}50`}}>{s.num}</div>
+                <h3 style={{fontSize:20,fontWeight:700,marginBottom:8,color:'var(--text)'}}>{s.title}</h3>
+                <p style={{fontSize:14,color:'var(--text-soft)',lineHeight:1.6,marginBottom:20}}>{s.desc}</p>
+                <div style={{display:'flex',justifyContent:'space-between',fontSize:12,marginBottom:6}}>
+                  <span style={{color:'var(--text-soft)'}}>Global progress</span>
+                  <span style={{fontWeight:600,color:'var(--text)'}}>{s.progress}%</span>
+                </div>
+                <div className="prog-bar"><div className="prog-fill" style={{width:s.progress+'%',background:s.color}}/></div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="glass-strong" style={{padding:40,marginBottom:48,position:'relative',overflow:'hidden'}}>
+          <div style={{position:'absolute',top:-128,right:-128,width:384,height:384,background:'rgba(16,185,129,.1)',borderRadius:'50%',filter:'blur(60px)'}}/>
+          <div style={{position:'relative'}}>
+            <h2 style={{fontSize:28,fontWeight:900,marginBottom:8,color:'var(--text)'}}>Cumulative platform impact</h2>
+            <p style={{color:'var(--text-soft)',marginBottom:32}}>Aggregated from all users who've completed an analysis.</p>
+            <div className="grid-4">
+              {impacts.map((m,i)=>(
+                <div key={i}>
+                  <Icon name={m.icon} size={32} color={m.color} style={{marginBottom:12}}/>
+                  <div style={{fontSize:28,fontWeight:900,marginBottom:4,color:'var(--text)'}}>{m.value}</div>
+                  <div style={{fontSize:14,color:'var(--text-soft)'}}>{m.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="grid-2">
+          <div className="glass" style={{padding:32}}>
+            <h3 style={{fontSize:20,fontWeight:700,marginBottom:16,display:'flex',alignItems:'center',gap:8,color:'var(--text)'}}><Icon name="lightbulb" size={20} color="#fbbf24"/> Why it matters</h3>
+            <p style={{color:'var(--text-muted)',lineHeight:1.6,marginBottom:16}}>The world needs 11 TW of renewable capacity by 2050 to meet climate commitments. But adoption stalls when homeowners and businesses lack personalized, trustworthy information.</p>
+            <p style={{color:'var(--text-muted)',lineHeight:1.6}}>RenewGenie closes that gap—translating complex policy, subsidies, and ROI math into a 60-second AI-powered decision for anyone, anywhere.</p>
+          </div>
+          <div className="glass" style={{padding:32}}>
+            <h3 style={{fontSize:20,fontWeight:700,marginBottom:16,display:'flex',alignItems:'center',gap:8,color:'var(--text)'}}><Icon name="target" size={20} color="#10b981"/> Our 2030 commitment</h3>
+            <ul style={{listStyle:'none',display:'flex',flexDirection:'column',gap:12}}>
+              {['Guide 1 million households to clean energy','Enable 5 GW of distributed renewable capacity','Avoid 10 million tonnes of CO₂ emissions','Reach 100% renewable-powered web infrastructure'].map((g,i)=>(
+                <li key={i} style={{display:'flex',gap:12,alignItems:'flex-start'}}>
+                  <Icon name="check" size={20} color="#10b981"/>
+                  <span style={{fontSize:14,color:'var(--text-muted)'}}>{g}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ===== INSIGHTS ===== */
+function InsightsPage() {
+  const [open, setOpen] = useState(null);
+  return (
+    <div style={{minHeight:'100vh',paddingTop:112,paddingBottom:80,backgroundImage:'radial-gradient(at 20% 20%,var(--mesh-1) 0,transparent 50%)'}}>
+      <div style={{maxWidth:800,margin:'0 auto',padding:'0 24px'}}>
+        <div className="section-header">
+          <div className="eyebrow">Insights</div>
+          <h1 className="section-title">Frequently asked <span className="grad-text">questions</span></h1>
+          <p className="section-sub">Everything you need to know before going renewable.</p>
+        </div>
+
+        <div style={{marginBottom:64}}>
+          {FAQS.map((f,i)=>(
+            <div key={i} className="faq-item">
+              <button className="faq-q" onClick={()=>setOpen(open===i?null:i)}>
+                <span style={{paddingRight:16}}>{f.q}</span>
+                <Icon name={open===i?'x':'arrow'} size={20} color="#10b981"/>
+              </button>
+              {open===i && <div className="faq-a">{f.a}</div>}
+            </div>
+          ))}
+        </div>
+
+        <div className="glass-strong" style={{padding:40,textAlign:'center'}}>
+          <Icon name="sparkles" size={40} color="#10b981" style={{marginBottom:16}}/>
+          <h3 style={{fontSize:24,fontWeight:700,marginBottom:8,color:'var(--text)'}}>Still have questions?</h3>
+          <p style={{color:'var(--text-soft)',marginBottom:24}}>Our AI advisor is here to help 24/7.</p>
+          <button className="btn-primary" style={{padding:'14px 28px',display:'inline-flex',alignItems:'center',gap:8}}>
+            <Icon name="send" size={16}/> Ask RenewGenie AI
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ===== FOOTER ===== */
+function Footer({ setPage }) {
+  return (
+    <footer className="footer">
+      <div className="section-inner">
+        <div className="footer-grid">
+          <div>
+            <div className="brand" style={{marginBottom:16}}>
+              <div className="brand-badge"><Icon name="zap" size={20} color="#fff"/></div>
+              <span>Renew<span className="grad-text">Genie</span></span>
+            </div>
+            <p style={{fontSize:14,color:'var(--text-soft)',lineHeight:1.6,maxWidth:360,marginBottom:20}}>AI-powered renewable energy awareness and decision platform. Built with a mission to accelerate clean energy adoption globally.</p>
+            <div style={{display:'flex',gap:8}}>
+              {['SDG 7','SDG 11','SDG 13'].map(t=>(
+                <span key={t} style={{fontSize:12,fontWeight:600,padding:'6px 12px',borderRadius:999,background:'rgba(16,185,129,.1)',color:'#059669',border:'1px solid rgba(16,185,129,.2)'}}>{t}</span>
+              ))}
+            </div>
+          </div>
+          <div>
+            <h4>Platform</h4>
+            <ul>
+              <li><button onClick={()=>setPage('advisor')}>AI Advisor</button></li>
+              <li><button onClick={()=>setPage('calculator')}>Calculator</button></li>
+              <li><button onClick={()=>setPage('schemes')}>Schemes</button></li>
+              <li><button onClick={()=>setPage('impact')}>Impact</button></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Resources</h4>
+            <ul>
+              <li><button onClick={()=>setPage('insights')}>FAQ</button></li>
+              <li><a href="#">Documentation</a></li>
+              <li><a href="#">Privacy</a></li>
+              <li><a href="#">Contact</a></li>
+            </ul>
+          </div>
+        </div>
+        <div style={{paddingTop:32,borderTop:'1px solid var(--border-soft)',display:'flex',flexDirection:'row',justifyContent:'space-between',gap:16,flexWrap:'wrap',fontSize:12,color:'var(--text-faint)'}}>
+          <div>© 2025 RenewGenie. Made with 🌱 for a sustainable future.</div>
+          <div style={{display:'flex',alignItems:'center',gap:8}}><span style={{width:6,height:6,borderRadius:'50%',background:'#34d399'}}/> All systems operational</div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+/* ===== APP ===== */
+function App() {
+  const [page, setPage] = useState('home');
+  const [theme, setTheme] = useTheme();
+  useEffect(() => { window.scrollTo({top:0,behavior:'smooth'}); }, [page]);
+  return (
+    <div className="app">
+      <Navbar page={page} setPage={setPage} theme={theme} setTheme={setTheme}/>
+      {page==='home' && <HomePage setPage={setPage}/>}
+      {page==='advisor' && <AdvisorPage/>}
+      {page==='calculator' && <CalculatorPage/>}
+      {page==='schemes' && <SchemesPage/>}
+      {page==='impact' && <ImpactPage/>}
+      {page==='insights' && <InsightsPage/>}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
